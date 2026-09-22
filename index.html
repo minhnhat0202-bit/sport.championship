@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Đăng ký thi đấu Giải thể thao mừng sinh nhật Trung tâm Nền tảng công nghệ & Chuyển đổi số 2026: Cầu lông, Bida, PES, Bóng bàn.">
+<link rel="icon" type="image/png" href="img/logo-vtnet.png">
+<style>
+  /* base reset (the hosted version gets this from the platform) */
+  [hidden] { display: none !important; }
+  img { max-width: 100%; }
+</style>
+<title>Giải thể thao 2026</title>
+<style>
+  /* Viettel brand fonts, served alongside the page */
+  @font-face { font-family: "FS Magistral"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/FSMagistral-Bold.ttf") format("truetype"); }
+  @font-face { font-family: "FS Magistral"; font-weight: 800; font-style: normal; font-display: swap; src: url("fonts/FSMagistral-ExtraBold.ttf") format("truetype"); }
+  @font-face { font-family: "Roboto"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/Roboto-Regular.ttf") format("truetype"); }
+  @font-face { font-family: "Roboto"; font-weight: 500; font-style: normal; font-display: swap; src: url("fonts/Roboto-Medium.ttf") format("truetype"); }
+  @font-face { font-family: "Roboto"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/Roboto-Bold.ttf") format("truetype"); }
+
+  :root {
+    --bg: #F7F5F4;
+    --surface: #FFFFFF;
+    --surface-2: #FBF9F8;
+    --ink: #17161A;
+    --muted: #6E6A72;
+    --line: #E6E1E2;
+    --line-strong: #D2CCCE;
+    --accent: #EE0033;
+    --accent-deep: #C4002A;
+    --accent-soft: #FDE8ED;
+    --accent-ink: #FFFFFF;
+    --male: #1F5FD6;
+    --male-soft: #E4ECFB;
+    --female: #D0338A;
+    --female-soft: #FBE4F1;
+    --ok: #1E8E5A;
+    --ok-soft: #E2F4EA;
+    --warn: #B45309;
+    --warn-soft: #FDEFD8;
+    --bad: #C81E3C;
+    --bad-soft: #FDE4E8;
+    --gold: #B7791F;
+    --gold-soft: #FBEFD5;
+    --shadow: 0 1px 2px rgba(23,22,26,.05), 0 8px 24px -12px rgba(23,22,26,.12);
+    --radius: 14px;
+    --font-body: "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-display: "FS Magistral", "Roboto", Helvetica, Arial, sans-serif;
+    --logo-bg: transparent;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141317; --surface: #1E1D22; --surface-2: #232227;
+      --ink: #F3F1F2; --muted: #A49FA7; --line: #2F2D34; --line-strong: #3E3B44;
+      --accent: #FF3358; --accent-deep: #E62B4E; --accent-soft: #3A1520; --accent-ink: #FFFFFF;
+      --male: #6E9BFF; --male-soft: #1B2742; --female: #F06CB8; --female-soft: #3E1A30;
+      --ok: #4CC488; --ok-soft: #14301F; --warn: #F0A24A; --warn-soft: #3A2810;
+      --bad: #FF6B84; --bad-soft: #3E1620; --gold: #E5B04A; --gold-soft: #3A2E12;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+      --logo-bg: #FFFFFF;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141317; --surface: #1E1D22; --surface-2: #232227;
+    --ink: #F3F1F2; --muted: #A49FA7; --line: #2F2D34; --line-strong: #3E3B44;
+    --accent: #FF3358; --accent-deep: #E62B4E; --accent-soft: #3A1520; --accent-ink: #FFFFFF;
+    --male: #6E9BFF; --male-soft: #1B2742; --female: #F06CB8; --female-soft: #3E1A30;
+    --ok: #4CC488; --ok-soft: #14301F; --warn: #F0A24A; --warn-soft: #3A2810;
+    --bad: #FF6B84; --bad-soft: #3E1620; --gold: #E5B04A; --gold-soft: #3A2E12;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    --logo-bg: #FFFFFF;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; padding-block: 20px 40px; padding-inline: 16px; }
+
+  /* Header */
+  .topbar {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap;
+    padding-bottom: 18px; margin-bottom: 20px;
+    border-bottom: 2px solid var(--line);
+    position: relative;
+  }
+  .topbar::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 96px; height: 2px; background: var(--accent); }
+  .topbar-left { flex: 1 1 520px; min-width: 0; }
+  h1 {
+    margin: 0; display: flex; flex-direction: column; gap: 2px;
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 2.6vw, 32px);
+    line-height: 1.12; letter-spacing: .01em; text-transform: uppercase;
+  }
+  h1 .t1 { color: var(--accent); }
+  h1 .t2, h1 .t3 { color: var(--ink); font-size: clamp(15px, 1.9vw, 24px); line-height: 1.2; }
+  h1 .t2 { white-space: nowrap; }
+  @media (max-width: 560px) { h1 .t2 { white-space: normal; } }
+  .topbar-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex: 0 0 auto; }
+  .logo { display: block; height: 56px; width: auto; max-width: 100%; padding: 4px 8px; border-radius: 8px; background: var(--logo-bg); }
+  @media (max-width: 600px) { .topbar-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; } .logo { height: 44px; } }
+  .mode-pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted);
+  }
+  .mode-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .mode-pill.live .dot { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+  .mode-pill.local .dot { background: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft); }
+
+  /* Layout */
+  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
+  @media (min-width: 980px) {
+    .grid { grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); }
+    .col-form { position: sticky; top: env(safe-area-inset-top, 0px); }
+  }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .tab {
+    position: relative; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600;
+    padding: 10px 16px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px 8px 0 0;
+  }
+  .tab:hover { color: var(--ink); background: var(--surface-2); }
+  .tab[aria-selected="true"] { color: var(--ink); }
+  .tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .tab .badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tab[aria-selected="true"] .badge { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .tab .badge:empty { display: none; }
+
+  /* Toast */
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px);
+    max-width: min(92vw, 520px); padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; line-height: 1.4;
+    background: var(--ink); color: var(--bg); box-shadow: 0 12px 40px -12px rgba(0,0,0,.5); opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s; z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.bad { background: var(--bad); color: #fff; }
+  .toast.ok { background: var(--ok); color: #fff; }
+
+  /* Countdown board */
+  .board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 420px) { .board { grid-template-columns: 1fr; } }
+  .tile { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .tile-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .tile-note { font-size: 13px; font-weight: 500; color: var(--ink); margin-top: -6px; }
+
+  .clock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .clock .unit { text-align: center; min-width: 0; container-type: inline-size; }
+  .clock .num {
+    font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1;
+    font-variant-numeric: tabular-nums; color: var(--ink); overflow: hidden;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 2px;
+  }
+  /* digits scale with the width of their own box so two digits always fit */
+  @supports (font-size: 1cqw) { .clock .num { font-size: clamp(16px, 36cqw, 30px); } }
+  .clock .lbl { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+  .tile.closed .clock .num { color: var(--muted); }
+  .deadline-status { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .deadline-status.closed { color: var(--bad); font-weight: 600; }
+
+  .slots { display: flex; flex-direction: column; gap: 12px; margin-top: 2px; }
+  .slot-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+  .slot-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px; min-width: 40px; text-align: center;
+  }
+  .slot-tag.m { background: var(--male-soft); color: var(--male); }
+  .slot-tag.f { background: var(--female-soft); color: var(--female); }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; border-radius: inherit; transition: width .4s ease; }
+  .bar.m > i { background: var(--male); }
+  .bar.f > i { background: var(--female); }
+  .slot-num { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .slot-num small { font-family: var(--font-body); font-weight: 500; font-size: 11px; color: var(--muted); margin-left: 2px; }
+  .slot-num.full { color: var(--bad); }
+  .slot-num.low { color: var(--warn); }
+  .slots-foot { font-size: 12px; color: var(--muted); margin-top: auto; }
+
+  /* Form */
+  .form-card { padding: 20px; }
+  .form-title { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .form-title h2 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: 0; }
+  .form-title span { font-size: 12px; color: var(--muted); }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 12px; }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  @media (max-width: 420px) { .fields { grid-template-columns: 1fr; } }
+  label, .legend { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .req { color: var(--accent); }
+  select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%236E6A72' stroke-width='1.8' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px !important; cursor: pointer;
+  }
+  select:invalid, select option[value=""] { color: var(--muted); }
+  select:disabled { opacity: .55; cursor: not-allowed; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"], select {
+    width: 100%; height: 40px; padding: 0 12px;
+    border: 1px solid var(--line-strong); border-radius: 9px; background: var(--surface); color: var(--ink);
+    font: inherit; font-size: 14px; outline: none; transition: border-color .15s, box-shadow .15s;
+    appearance: none; -webkit-appearance: none;
+  }
+  input::placeholder { color: var(--muted); opacity: .8; }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  input:disabled { opacity: .55; cursor: not-allowed; }
+  .field.invalid input { border-color: var(--bad); }
+  .field .err { font-size: 11px; color: var(--bad); display: none; }
+  .field.invalid .err { display: block; }
+
+  .radios { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .radio {
+    position: relative; display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px;
+    border: 1px solid var(--line-strong); border-radius: 9px; cursor: pointer; user-select: none;
+    background: var(--surface); transition: border-color .15s, background .15s;
+  }
+  .radio input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .radio .ring { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); display: grid; place-items: center; flex: none; }
+  .radio .ring::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+  .radio.m:has(input:checked) { border-color: var(--male); background: var(--male-soft); }
+  .radio.m:has(input:checked) .ring { border-color: var(--male); } .radio.m:has(input:checked) .ring::after { background: var(--male); }
+  .radio.f:has(input:checked) { border-color: var(--female); background: var(--female-soft); }
+  .radio.f:has(input:checked) .ring { border-color: var(--female); } .radio.f:has(input:checked) .ring::after { background: var(--female); }
+  .radio:has(input:focus-visible) { box-shadow: 0 0 0 3px var(--accent-soft); }
+  .radio .cnt { margin-left: auto; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .radio.full-slot { opacity: .6; }
+  .radio.full-slot .cnt { color: var(--bad); font-weight: 600; }
+
+  .actions { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .btn {
+    height: 44px; border: 0; border-radius: 10px; padding: 0 18px; cursor: pointer;
+    font: inherit; font-size: 14px; font-weight: 700; letter-spacing: .01em;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .15s, transform .05s, opacity .15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 1px; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-deep); }
+  .btn-primary:disabled { background: var(--line-strong); color: var(--muted); cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-strong); height: 36px; font-weight: 600; font-size: 13px; }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .btn-ghost:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-small { height: 34px; padding: 0 14px; font-size: 13px; }
+
+  .msg { display: none; padding: 10px 12px; border-radius: 9px; font-size: 13px; line-height: 1.45; border: 1px solid transparent; }
+  .msg.show { display: block; }
+  .msg.ok { background: var(--ok-soft); color: var(--ok); border-color: color-mix(in srgb, var(--ok) 30%, transparent); }
+  .msg.bad { background: var(--bad-soft); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 30%, transparent); }
+  .msg.warn { background: var(--warn-soft); color: var(--warn); border-color: color-mix(in srgb, var(--warn) 30%, transparent); }
+  .hint { font-size: 12px; color: var(--muted); }
+
+  /* Table */
+  .table-card { overflow: hidden; }
+  .table-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 16px 18px; border-bottom: 1px solid var(--line);
+  }
+  .table-head h2, .sec-head h2 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: 0; display: flex; align-items: center; gap: 10px; }
+  .count-chip {
+    font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1;
+    padding: 5px 9px; border-radius: 7px; background: var(--accent-soft); color: var(--accent); font-variant-numeric: tabular-nums;
+  }
+  .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 2px; }
+  .seg button {
+    border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 12px; font-weight: 600;
+    padding: 5px 11px; border-radius: 6px; cursor: pointer; font-variant-numeric: tabular-nums;
+  }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  thead th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    padding: 10px 14px; background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+  tbody tr.fresh td { animation: flash 1.6s ease-out; }
+  @keyframes flash { from { background: var(--accent-soft); } to { background: transparent; } }
+  td.idx { color: var(--muted); font-variant-numeric: tabular-nums; width: 44px; }
+  td.name { font-weight: 600; }
+  .g {
+    display: inline-block; width: 18px; height: 18px; border-radius: 5px; margin-right: 8px; vertical-align: -4px;
+    font-size: 10px; font-weight: 700; line-height: 18px; text-align: center;
+  }
+  .g.m { background: var(--male-soft); color: var(--male); }
+  .g.f { background: var(--female-soft); color: var(--female); }
+  td.code { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+  td.ts { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 13px; }
+  td.act { width: 40px; text-align: right; }
+  .x {
+    width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted);
+    cursor: pointer; font-size: 14px; line-height: 1; display: inline-grid; place-items: center;
+  }
+  .x:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+  .x:disabled { opacity: .4; cursor: wait; }
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+  .empty strong { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  .table-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
+
+  /* Bracket section */
+  .bracket-sec { overflow: hidden; }
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 16px 18px; border-bottom: 1px solid var(--line);
+  }
+  .sec-head .status { font-size: 13px; color: var(--muted); }
+  .sec-head .status.ready { color: var(--ok); font-weight: 600; }
+  .sec-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .bracket-body { padding: 16px 18px 6px; }
+  .bracket-scroll { overflow-x: auto; padding-bottom: 8px; }
+  .bracket-scroll svg { display: block; min-width: 1040px; width: 100%; height: auto; }
+  .bracket-empty { padding: 36px 20px; text-align: center; color: var(--muted); }
+  .bracket-empty strong { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  .bracket-help { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); padding: 6px 18px 14px; }
+  .bracket-help span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .bracket-help .k-win::before { background: var(--ok); }
+  .bracket-help .k-champ::before { background: var(--gold); }
+  .bracket-help .k-wait::before { background: var(--line-strong); }
+
+  /* SVG bracket styling */
+  .bk-col { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; fill: var(--muted); font-family: var(--font-body); }
+  .bk-box { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+  .bk-box.done { stroke: var(--line); }
+  .bk-sep { stroke: var(--line); stroke-width: 1; }
+  .bk-link { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+  .bk-link.won { stroke: var(--ok); }
+  .bk-team { cursor: default; }
+  .bk-team.clickable { cursor: pointer; }
+  .bk-team.clickable:hover .bk-hit { fill: var(--accent-soft); }
+  .bk-hit { fill: transparent; }
+  .bk-seed { font-family: var(--font-display); font-weight: 700; font-size: 13px; fill: var(--muted); }
+  .bk-name { font-family: var(--font-body); font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .bk-team.tbd .bk-name { fill: var(--muted); font-style: italic; font-weight: 400; }
+  .bk-team.win .bk-name { font-weight: 700; fill: var(--ok); }
+  .bk-team.win .bk-seed { fill: var(--ok); }
+  .bk-team.lose .bk-name, .bk-team.lose .bk-seed { fill: var(--muted); opacity: .75; }
+  .bk-win-mark { fill: var(--ok); }
+  .bk-champ-box { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 1.5; }
+  .bk-champ-lbl { font-family: var(--font-body); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; fill: var(--gold); }
+  .bk-champ-name { font-family: var(--font-body); font-size: 13px; font-weight: 700; fill: var(--ink); }
+  .bk-third-lbl { font-family: var(--font-body); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; fill: var(--muted); }
+
+  .pairs-table thead th { background: var(--surface-2); }
+  .pairs-table td.team-no { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--accent); width: 60px; }
+  .pairs-table td small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 400; }
+
+  /* PIN dialog */
+  dialog {
+    border: 1px solid var(--line); border-radius: 14px; padding: 0; background: var(--surface); color: var(--ink);
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,.4); width: min(92vw, 380px);
+  }
+  dialog::backdrop { background: rgba(10, 8, 12, .45); backdrop-filter: blur(2px); }
+  .dlg { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .dlg h3 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .dlg p { margin: 0; font-size: 13px; color: var(--muted); }
+  .dlg .row { display: flex; gap: 8px; justify-content: flex-end; }
+  .dlg .pin-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .dlg .pin-wrap label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .btn-danger { background: var(--bad); color: #fff; }
+  .btn-danger:hover { background: color-mix(in srgb, var(--bad) 85%, black); }
+  .dlg .pin-err { font-size: 12px; color: var(--bad); min-height: 16px; }
+  input[type="password"].pin { letter-spacing: .3em; font-size: 18px; font-variant-numeric: tabular-nums; text-align: center; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  /* Sport selector */
+  .sports { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; margin: -6px 0 20px; }
+  .sports-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .sport-list { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sport {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 150px;
+    padding: 9px 14px 8px; border-radius: 12px; border: 1.5px solid var(--line-strong); background: var(--surface);
+    color: var(--ink); font: inherit; cursor: pointer; text-align: left; transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .sport:hover { border-color: var(--accent); }
+  .sport[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+  .sport:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 1px; }
+  .sport-name { font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1.1; }
+  .sport[aria-selected="true"] .sport-name { color: var(--accent); }
+  .sport-meta { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .sport-meta b { font-weight: 600; color: var(--ink); }
+  .sport-meta.full b { color: var(--bad); }
+  .slot-tag.all { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+  .bar.all > i { background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1><span class="t1" id="event-tag">Giải thể thao mừng sinh nhật</span><span class="t2" id="event-name">Trung tâm Nền tảng công nghệ &amp; Chuyển đổi số</span><span class="t3" id="event-year">2026</span></h1>
+    </div>
+    <div class="topbar-right">
+      <img class="logo" src="img/logo-vtnet.png" alt="Viettel Networks" width="1200" height="462">
+      <span class="mode-pill" id="mode-pill"><span class="dot"></span><span id="mode-text">Đang kết nối…</span></span>
+    </div>
+  </header>
+
+  <nav class="sports" aria-label="Chọn bộ môn">
+    <span class="sports-label">Bộ môn</span>
+    <div class="sport-list" id="sport-list" role="tablist"></div>
+  </nav>
+
+  <div class="tabs" role="tablist" aria-label="Chuyển mục">
+    <button class="tab" role="tab" id="tab-reg" aria-selected="true" aria-controls="panel-reg" type="button">Đăng ký <span class="badge" id="tab-reg-badge"></span></button>
+    <button class="tab" role="tab" id="tab-bracket" aria-selected="false" aria-controls="panel-bracket" type="button">Sơ đồ thi đấu <span class="badge" id="tab-bracket-badge"></span></button>
+  </div>
+
+  <div id="panel-reg" role="tabpanel" aria-labelledby="tab-reg">
+  <div class="grid">
+    <!-- LEFT: countdown + form -->
+    <div class="col-form">
+      <div class="board">
+        <div class="card tile" id="tile-time">
+          <span class="tile-label">Hạn đăng ký</span>
+          <span class="tile-note" id="deadline-text">—</span>
+          <div class="clock" aria-live="off">
+            <div class="unit"><div class="num" id="cd-d">00</div><div class="lbl">Ngày</div></div>
+            <div class="unit"><div class="num" id="cd-h">00</div><div class="lbl">Giờ</div></div>
+            <div class="unit"><div class="num" id="cd-m">00</div><div class="lbl">Phút</div></div>
+            <div class="unit"><div class="num" id="cd-s">00</div><div class="lbl">Giây</div></div>
+          </div>
+          <div class="deadline-status" id="deadline-status">Còn thời gian đăng ký</div>
+        </div>
+
+        <div class="card tile" id="tile-slots">
+          <span class="tile-label">Slot còn lại</span>
+          <div class="slots" id="slots-mixed">
+            <div class="slot-row">
+              <span class="slot-tag m">Nam</span>
+              <div class="bar m"><i id="bar-m"></i></div>
+              <span class="slot-num" id="left-m">16<small>/16</small></span>
+            </div>
+            <div class="slot-row">
+              <span class="slot-tag f">Nữ</span>
+              <div class="bar f"><i id="bar-f"></i></div>
+              <span class="slot-num" id="left-f">16<small>/16</small></span>
+            </div>
+          </div>
+          <div class="slots" id="slots-single" hidden>
+            <div class="slot-row">
+              <span class="slot-tag all" id="slot-tag-all">Slot</span>
+              <div class="bar all"><i id="bar-all"></i></div>
+              <span class="slot-num" id="left-all">16<small>/16</small></span>
+            </div>
+          </div>
+          <div class="slots-foot" id="slots-foot">Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.</div>
+        </div>
+      </div>
+
+      <form class="card form-card" id="reg-form" novalidate>
+        <div class="form-title">
+          <h2 id="form-title">Đăng ký môn Cầu lông</h2>
+          <span><span class="req">*</span> bắt buộc</span>
+        </div>
+        <div class="fields">
+          <div class="field full" data-field="name">
+            <label for="f-name">Họ và tên <span class="req">*</span></label>
+            <input type="text" id="f-name" name="name" autocomplete="name" placeholder="Nguyễn Văn A" maxlength="80" required>
+            <span class="err">Vui lòng nhập họ và tên.</span>
+          </div>
+          <div class="field" data-field="dob">
+            <label for="f-dob">Ngày sinh <span class="req">*</span></label>
+            <input type="date" id="f-dob" name="dob" required>
+            <span class="err">Ngày sinh không hợp lệ.</span>
+          </div>
+          <div class="field" data-field="code">
+            <label for="f-code">Mã nhân viên <span class="req">*</span></label>
+            <input type="text" id="f-code" name="code" placeholder="VD: 123456" autocomplete="off" maxlength="20" required>
+            <span class="err">Vui lòng nhập mã nhân viên.</span>
+          </div>
+          <div class="field full" data-field="email">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input type="email" id="f-email" name="email" autocomplete="email" placeholder="ten.nv@viettel.com.vn" maxlength="120" required>
+            <span class="err">Email không đúng định dạng.</span>
+          </div>
+          <div class="field" data-field="phone">
+            <label for="f-phone">Số điện thoại <span class="req">*</span></label>
+            <input type="tel" id="f-phone" name="phone" autocomplete="tel" placeholder="09xx xxx xxx" inputmode="tel" maxlength="15" required>
+            <span class="err">Số điện thoại cần 10 chữ số, bắt đầu bằng 0.</span>
+          </div>
+          <div class="field" data-field="dept">
+            <label for="f-dept">Phòng ban <span class="req">*</span></label>
+            <select id="f-dept" name="dept" required>
+              <option value="">Chọn phòng ban</option>
+            </select>
+            <span class="err">Vui lòng chọn phòng ban.</span>
+          </div>
+          <div class="field full" data-field="gender">
+            <span class="legend" id="gender-legend">Giới tính <span class="req">*</span></span>
+            <div class="radios" role="radiogroup" aria-labelledby="gender-legend">
+              <label class="radio m" id="radio-m">
+                <input type="radio" name="gender" value="M" id="f-gender-m">
+                <span class="ring"></span><span>Nam</span><span class="cnt" id="cnt-m"></span>
+              </label>
+              <label class="radio f" id="radio-f">
+                <input type="radio" name="gender" value="F" id="f-gender-f">
+                <span class="ring"></span><span>Nữ</span><span class="cnt" id="cnt-f"></span>
+              </label>
+            </div>
+            <span class="err">Vui lòng chọn giới tính.</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="btn-submit" type="submit">Gửi đăng ký</button>
+          <div class="msg" id="msg" role="status" aria-live="polite"></div>
+          <p class="hint" id="form-hint">Mỗi mã nhân viên chỉ đăng ký một lần cho mỗi bộ môn. Tên bạn sẽ hiện trong bảng ngay sau khi gửi thành công.</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- RIGHT: table -->
+    <section class="card table-card" aria-label="Bảng đăng ký">
+      <div class="table-head">
+        <h2><span id="table-title">Bảng đăng ký thi đấu Cầu lông</span> <span class="count-chip" id="total-chip">0</span></h2>
+        <div class="seg" role="group" aria-label="Lọc theo giới">
+          <button type="button" data-filter="all" aria-pressed="true">Tất cả</button>
+          <button type="button" data-filter="M" aria-pressed="false">Nam <span id="seg-m">0</span></button>
+          <button type="button" data-filter="F" aria-pressed="false">Nữ <span id="seg-f">0</span></button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Tên vận động viên</th>
+              <th scope="col">Mã nhân viên</th>
+              <th scope="col">Phòng</th>
+              <th scope="col">Thời gian đăng ký</th>
+              <th scope="col"><span class="sr">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="empty" hidden>
+          <strong>Chưa có ai đăng ký</strong>
+          Người đăng ký đầu tiên sẽ xuất hiện ở đây.
+        </div>
+      </div>
+      <div class="table-foot">
+        <span>Sắp xếp theo thời gian đăng ký, sớm nhất ở trên. Xoá đăng ký cần mã xác nhận của ban tổ chức.</span>
+        <span id="foot-right"></span>
+      </div>
+    </section>
+  </div>
+  </div><!-- /panel-reg -->
+
+  <!-- BRACKET -->
+  <div id="panel-bracket" role="tabpanel" aria-labelledby="tab-bracket" hidden>
+  <section class="card bracket-sec" aria-label="Sơ đồ thi đấu">
+    <div class="sec-head">
+      <h2><span id="bracket-title">Sơ đồ thi đấu Cầu lông</span> <span class="status" id="bracket-status"></span></h2>
+      <div class="sec-actions">
+        <button type="button" class="btn btn-primary btn-small" id="btn-pair" disabled>Tự động xếp cặp</button>
+        <button type="button" class="btn btn-ghost btn-small" id="btn-repair" hidden>Bốc thăm lại</button>
+      </div>
+    </div>
+    <div id="bracket-empty" class="bracket-empty">
+      <strong>Chưa có sơ đồ</strong>
+      <span id="bracket-empty-text"></span>
+    </div>
+    <div id="bracket-wrap" hidden>
+      <div class="bracket-body">
+        <div class="bracket-scroll" id="bracket-svg"></div>
+      </div>
+      <div class="bracket-help">
+        <span class="k-wait">Chưa có kết quả</span>
+        <span class="k-win">Đội thắng, đi tiếp</span>
+        <span class="k-champ">Vô địch</span>
+        <span id="bracket-tip">Ban tổ chức bấm vào tên đội để ghi đội thắng (cần mã xác nhận).</span>
+      </div>
+      <div class="table-scroll pairs-table">
+        <table>
+          <thead id="pairs-thead"></thead>
+          <tbody id="pairs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  </div><!-- /panel-bracket -->
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="pin-dialog">
+  <form class="dlg" id="pin-form" novalidate>
+    <h3 id="pin-title">Xác nhận</h3>
+    <p id="pin-desc"></p>
+    <div class="pin-wrap" id="pin-wrap">
+      <label for="pin-input">Mã xác nhận của ban tổ chức</label>
+      <input type="password" class="pin" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="••••••">
+    </div>
+    <div class="pin-err" id="pin-err"></div>
+    <div class="row">
+      <button type="button" class="btn btn-ghost btn-small" id="pin-cancel">Huỷ</button>
+      <button type="submit" class="btn btn-primary btn-small" id="pin-ok">Xác nhận</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Config & state ----------
+  // The confirmation PIN is NOT in this file. Only its salted SHA-256 hash is stored
+  // in the shared config document (config/main → pinHash), written by the organiser.
+  const PIN_SALT = 'vtnet-cau-long:';
+  // ---- Google Sheets backend (dùng khi chạy trên GitHub Pages / mở file trực tiếp) ----
+  // Dán URL Web App của Google Apps Script vào đây (xem apps-script/Code.gs và HUONG-DAN.md).
+  // Để trống = chạy thử, dữ liệu chỉ lưu trong trình duyệt.
+  const SHEETS_API_URL = '';
+  // Everyone registers individually. format decides the draw:
+  //   'mixed'  = random man+woman pairs (slots = pairs; slots men + slots women may register)
+  //   'pair'   = random pairs regardless of gender (slots = pairs; 2 x slots players may register)
+  //   'single' = no pairing (slots = players)
+  const DEFAULT_SPORTS = [
+    { id: 'cau-long', name: 'Cầu lông', format: 'mixed', slots: 16, note: 'Đôi nam nữ · tối đa 16 đôi' },
+    { id: 'bida', name: 'Bida', format: 'pair', slots: 16, note: 'Đôi · tối đa 16 đôi' },
+    { id: 'pes', name: 'PES', format: 'pair', slots: 16, note: 'Đôi · tối đa 16 đôi' },
+    { id: 'bong-ban', name: 'Bóng bàn', format: 'pair', slots: 8, note: 'Đôi · tối đa 8 đôi' }
+  ];
+  const DEFAULT_CFG = {
+    eventTag: 'Giải thể thao mừng sinh nhật',
+    eventName: 'Trung tâm Nền tảng công nghệ & Chuyển đổi số',
+    eventYear: '2026',
+    deadline: '2026-09-28T00:00:00+07:00',
+    pinHash: '',
+    sports: DEFAULT_SPORTS
+  };
+  const DEFAULT_DEPARTMENTS = [
+    'Ban Giám đốc',
+    'Phòng Giải pháp Băng rộng Cố định và Cơ điện',
+    'Phòng Giải pháp Công nghệ Thông tin và Quy trình',
+    'Phòng Giải pháp Di động',
+    'Phòng Hạ tầng Cloud',
+    'Phòng Hợp tác Triển khai',
+    'Phòng Kiểm soát Chất lượng',
+    'Phòng Nền tảng Công nghệ',
+    'Phòng Trí tuệ Nhân tạo'
+  ];
+  const LS_KEY = 'vtnet-sports-2026';
+  const clientId = 'c-' + Math.random().toString(36).slice(2, 10);
+
+  let cfg = { ...DEFAULT_CFG };
+  let sport = null;           // the selected sport entry from cfg.sports
+  let regs = [];              // registrations of the selected sport
+  let counts = {};            // {sportId: {M, F, total}} for the selector chips
+  let bracket = null;         // {createdAt, size, teams:[{n, members:[{id,name,dept,code,gender}]}], results:{'r-i':'A'|'B'}}
+  let db = null;              // claude.ai shared store (hosted version)
+  let mode = 'local';         // 'claude' | 'sheets' | 'local'
+  let allRegs = [];           // sheets mode: registrations of every sport
+  let brackets = {};          // sheets mode: {sportId: bracket}
+  let sessionPin = '';        // sheets mode: PIN typed this session, verified by the server on each action
+  let local = { regs: {}, bracket: {} };   // local-mode storage, keyed by sport id
+  let filter = 'all';
+  let submitting = false;
+  let lastAddedId = null;
+  let dbReady = false;
+  let unlocked = false;       // PIN verified in this page session
+  let unsubRegs = null, unsubBracket = null, unsubCounts = [];
+
+  const $ = (id) => document.getElementById(id);
+  const el = {
+    eventName: $('event-name'), eventTag: $('event-tag'), eventYear: $('event-year'), modePill: $('mode-pill'), modeText: $('mode-text'),
+    sportList: $('sport-list'),
+    tileTime: $('tile-time'), deadlineText: $('deadline-text'), deadlineStatus: $('deadline-status'),
+    cdD: $('cd-d'), cdH: $('cd-h'), cdM: $('cd-m'), cdS: $('cd-s'),
+    slotsMixed: $('slots-mixed'), slotsSingle: $('slots-single'),
+    leftM: $('left-m'), leftF: $('left-f'), barM: $('bar-m'), barF: $('bar-f'), leftAll: $('left-all'), barAll: $('bar-all'), slotTagAll: $('slot-tag-all'), slotsFoot: $('slots-foot'),
+
+    form: $('reg-form'), formTitle: $('form-title'), submit: $('btn-submit'), msg: $('msg'),
+    cntM: $('cnt-m'), cntF: $('cnt-f'), radioM: $('radio-m'), radioF: $('radio-f'),
+    tableTitle: $('table-title'), totalChip: $('total-chip'), segM: $('seg-m'), segF: $('seg-f'),
+    tbody: $('tbody'), empty: $('empty'), footRight: $('foot-right'), dept: $('f-dept'),
+    bTitle: $('bracket-title'), bStatus: $('bracket-status'), btnPair: $('btn-pair'), btnRepair: $('btn-repair'),
+    bEmpty: $('bracket-empty'), bEmptyText: $('bracket-empty-text'), bWrap: $('bracket-wrap'), bSvg: $('bracket-svg'),
+    pairsHead: $('pairs-thead'), pairsBody: $('pairs-tbody'),
+    dlg: $('pin-dialog'), pinForm: $('pin-form'), pinInput: $('pin-input'), pinErr: $('pin-err'), pinCancel: $('pin-cancel'),
+    pinDesc: $('pin-desc'), pinTitle: $('pin-title'), pinWrap: $('pin-wrap'), pinOk: $('pin-ok'), toast: $('toast'),
+    tabReg: $('tab-reg'), tabBracket: $('tab-bracket'), panelReg: $('panel-reg'), panelBracket: $('panel-bracket'),
+    tabRegBadge: $('tab-reg-badge'), tabBracketBadge: $('tab-bracket-badge')
+  };
+
+  // ---------- Helpers ----------
+  const pad = (n) => String(n).padStart(2, '0');
+  function fmtTs(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  function fmtDeadline(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    // Midnight is shown as 24:00 of the previous day (hết ngày 27/9), the way people read a deadline.
+    if (d.getHours() === 0 && d.getMinutes() === 0) {
+      const prev = new Date(d.getTime() - 86400000);
+      return `24:00 ngày ${pad(prev.getDate())}/${pad(prev.getMonth() + 1)}/${prev.getFullYear()}`;
+    }
+    return `${pad(d.getHours())}:${pad(d.getMinutes())} ngày ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  }
+  const sports = () => (Array.isArray(cfg.sports) && cfg.sports.length ? cfg.sports : DEFAULT_SPORTS);
+  const fmtOf = (sp) => (sp && (sp.format === 'pair' || sp.format === 'single')) ? sp.format : 'mixed';
+  const isMixed = () => fmtOf(sport) === 'mixed';
+  const isPair = () => fmtOf(sport) === 'pair';
+  const slotsOf = (sp) => Math.max(1, (sp && sp.slots) | 0 || 16);
+  const S = () => slotsOf(sport);
+  // how many people may register in total
+  const capacity = (sp) => fmtOf(sp) === 'single' ? slotsOf(sp) : slotsOf(sp) * 2;
+  // player slots the form checks against: per gender (mixed) or overall (pair, single)
+  const playerCap = () => isMixed() ? S() : capacity(sport);
+  const unitOf = (sp) => fmtOf(sp) === 'single' ? 'VĐV' : 'đội';
+  const deadlineIso = () => (sport && sport.deadline) || cfg.deadline;
+  const deadlineMs = () => new Date(deadlineIso()).getTime();
+  const isClosed = () => Date.now() >= deadlineMs();
+  const countOf = (g) => regs.filter(r => r.gender === g).length;
+  // slots left for a gender (mixed) or overall (single)
+  const leftOf = (g) => isMixed() ? Math.max(0, S() - countOf(g)) : Math.max(0, playerCap() - regs.length);
+  const isFull = () => isMixed() ? (countOf('M') >= S() && countOf('F') >= S()) : regs.length >= playerCap();
+  const norm = (s) => String(s || '').trim().replace(/\s+/g, ' ');
+  const safeId = (code) => norm(code).toUpperCase().replace(/[^A-Za-z0-9_\-.~:@+]/g, '-').slice(0, 120) || ('X-' + Date.now());
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const shortName = (full) => { const w = norm(full).split(' '); return w.length > 2 ? w.slice(-2).join(' ') : w.join(' '); };
+  function truncate(s, n) { return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s; }
+
+  async function sha256Hex(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function shuffle(arr) {
+    const a = arr.slice();
+    const rnd = new Uint32Array(a.length);
+    crypto.getRandomValues(rnd);
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = rnd[i] % (i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function showMsg(kind, text) { el.msg.className = 'msg show ' + kind; el.msg.textContent = text; }
+  function clearMsg() { el.msg.className = 'msg'; el.msg.textContent = ''; }
+
+  // ---------- Toast (browser alert/confirm are blocked inside the viewer frame) ----------
+  let toastTimer = null;
+  function toast(text, kind) {
+    el.toast.textContent = text;
+    el.toast.className = 'toast show ' + (kind || '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.toast.className = 'toast'; }, 4200);
+  }
+
+  // ---------- Confirm dialog with organiser PIN ----------
+  function confirmAction({ title, text, okLabel, danger }) {
+    return new Promise((resolve) => {
+      const needPin = !unlocked;
+      if (needPin && !cfg.pinHash && mode !== 'sheets') {
+        toast('Chức năng này chỉ dùng được trên bản trực tuyến đã cấu hình mã xác nhận.', 'bad');
+        return resolve(false);
+      }
+      el.pinTitle.textContent = title || 'Xác nhận';
+      el.pinDesc.textContent = text || '';
+      el.pinWrap.hidden = !needPin;
+      el.pinErr.textContent = '';
+      el.pinInput.value = '';
+      el.pinOk.textContent = okLabel || 'Xác nhận';
+      el.pinOk.className = 'btn btn-small ' + (danger ? 'btn-danger' : 'btn-primary');
+      el.pinOk.disabled = false;
+      let settled = false;
+      const done = (ok) => { if (settled) return; settled = true; cleanup(); if (el.dlg.open) el.dlg.close(); resolve(ok); };
+      const onSubmit = async (ev) => {
+        ev.preventDefault();
+        if (!needPin) return done(true);
+        const pin = el.pinInput.value.trim();
+        if (!pin) { el.pinErr.textContent = 'Vui lòng nhập mã.'; el.pinInput.focus(); return; }
+        if (mode === 'sheets') { sessionPin = pin; return done(true); }   // server verifies
+        el.pinOk.disabled = true;
+        let h = '';
+        try { h = await sha256Hex(PIN_SALT + pin); } catch (e) { h = ''; }
+        el.pinOk.disabled = false;
+        if (h && h === cfg.pinHash) { unlocked = true; done(true); }
+        else { el.pinErr.textContent = 'Mã không đúng.'; el.pinInput.select(); }
+      };
+      const onCancel = () => done(false);
+      const cleanup = () => {
+        el.pinForm.removeEventListener('submit', onSubmit);
+        el.pinCancel.removeEventListener('click', onCancel);
+        el.dlg.removeEventListener('cancel', onCancel);
+        el.dlg.removeEventListener('close', onCancel);
+      };
+      el.pinForm.addEventListener('submit', onSubmit);
+      el.pinCancel.addEventListener('click', onCancel);
+      el.dlg.addEventListener('cancel', onCancel);
+      el.dlg.addEventListener('close', onCancel);
+      el.dlg.showModal();
+      setTimeout(() => (needPin ? el.pinInput : el.pinOk).focus(), 30);
+    });
+  }
+
+  // ---------- Google Sheets backend ----------
+  let refreshing = false, refreshTimer = null;
+  async function apiGet() {
+    const r = await fetch(SHEETS_API_URL + (SHEETS_API_URL.includes('?') ? '&' : '?') + 'action=state&t=' + Date.now(), { redirect: 'follow', cache: 'no-store' });
+    return r.json();
+  }
+  async function apiPost(body) {
+    // text/plain avoids a CORS preflight, which Apps Script cannot answer
+    const r = await fetch(SHEETS_API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    return r.json();
+  }
+  function applySheetsState(st) {
+    cfg = { ...DEFAULT_CFG, ...(st.config || {}), sports: (st.sports && st.sports.length) ? st.sports : DEFAULT_SPORTS, pinHash: '' };
+    allRegs = Array.isArray(st.regs) ? st.regs : [];
+    brackets = st.brackets || {};
+    const list = sports();
+    if (!sport || !list.some(sp => sp.id === sport.id)) sport = list.find(sp => sp.id === initialSportId()) || list[0];
+    applySheetsSelection();
+  }
+  function applySheetsSelection() {
+    regs = allRegs.filter(r => r.sport === sport.id).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+    bracket = brackets[sport.id] || null;
+    counts = {};
+    sports().forEach(sp => {
+      const list = allRegs.filter(r => r.sport === sp.id);
+      counts[sp.id] = { M: list.filter(r => r.gender === 'M').length, F: list.filter(r => r.gender === 'F').length, total: list.length };
+    });
+    renderAll();
+  }
+  async function refreshSheets(silent) {
+    if (refreshing) return;
+    refreshing = true;
+    try {
+      const st = await apiGet();
+      if (!st || !st.ok) throw new Error(st && st.message || 'state');
+      applySheetsState(st);
+      setMode('live', 'Trực tuyến · Google Sheets, tự cập nhật');
+    } catch (e) {
+      if (!silent) setMode('local', 'Không kết nối được Google Sheets');
+    } finally { refreshing = false; }
+  }
+  function startSheetsPolling() {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(() => { if (document.visibilityState === 'visible') refreshSheets(true); }, 6000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshSheets(true); });
+  }
+  // an admin call came back: map server codes, forget a wrong PIN
+  function adminResult(res) {
+    if (res && res.ok) { unlocked = true; return null; }
+    const code = res && res.code;
+    if (code === 'pin' || code === 'pin-unset') { unlocked = false; sessionPin = ''; }
+    return { code: code || 'unavailable' };
+  }
+
+  // ---------- Tabs ----------
+  function selectTab(which) {
+    const isReg = which !== 'bracket';
+    el.tabReg.setAttribute('aria-selected', String(isReg));
+    el.tabBracket.setAttribute('aria-selected', String(!isReg));
+    el.panelReg.hidden = !isReg;
+    el.panelBracket.hidden = isReg;
+    try { localStorage.setItem(LS_KEY + ':tab', isReg ? 'reg' : 'bracket'); } catch (e) { /* ignore */ }
+  }
+  el.tabReg.addEventListener('click', () => selectTab('reg'));
+  el.tabBracket.addEventListener('click', () => selectTab('bracket'));
+  document.querySelector('.tabs').addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') {
+      ev.preventDefault();
+      const toBracket = el.tabReg.getAttribute('aria-selected') === 'true';
+      selectTab(toBracket ? 'bracket' : 'reg');
+      (toBracket ? el.tabBracket : el.tabReg).focus();
+    }
+  });
+
+  // ---------- Sport selector ----------
+  function renderSports() {
+    const list = sports();
+    el.sportList.innerHTML = list.map(sp => {
+      const c = counts[sp.id] || { M: 0, F: 0, total: 0 };
+      const cap = capacity(sp);
+      const full = fmtOf(sp) === 'mixed' ? (c.M >= slotsOf(sp) && c.F >= slotsOf(sp)) : c.total >= cap;
+      const fallback = { mixed: 'Đôi nam nữ', pair: 'Đôi', single: 'Cá nhân' }[fmtOf(sp)];
+      const meta = `${esc(sp.note || fallback)} · <b>${c.total}/${cap}</b> người`;
+      return `<button type="button" class="sport" role="tab" data-sport="${esc(sp.id)}" aria-selected="${sport && sport.id === sp.id}">
+        <span class="sport-name">${esc(sp.name)}</span>
+        <span class="sport-meta ${full ? 'full' : ''}">${meta}</span>
+      </button>`;
+    }).join('');
+  }
+  el.sportList.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-sport]');
+    if (b) selectSport(b.dataset.sport);
+  });
+
+  function selectSport(id) {
+    const list = sports();
+    const next = list.find(sp => sp.id === id) || list[0];
+    if (!next) return;
+    const changed = !sport || sport.id !== next.id;
+    sport = next;
+    try { localStorage.setItem(LS_KEY + ':sport', sport.id); } catch (e) { /* ignore */ }
+    try { history.replaceState(null, '', '#' + sport.id); } catch (e) { /* ignore */ }
+    if (changed) {
+      clearMsg();
+      filter = 'all';
+      document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.filter === 'all')));
+      el.form.querySelectorAll('.field.invalid').forEach(n => n.classList.remove('invalid'));
+      subscribeSport();
+    }
+    renderAll();
+  }
+
+  // ---------- Rendering ----------
+  function renderDepartments() {
+    let list = cfg.departments;
+    if (typeof list === 'string') list = list.split(/\s*[|\n]\s*/).map(x => x.trim()).filter(Boolean);   // Sheet: "A | B | C"
+    if (!Array.isArray(list) || !list.length) list = DEFAULT_DEPARTMENTS;
+    const current = el.dept.value;
+    const html = '<option value="">Chọn phòng ban</option>' + list.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+    if (el.dept.innerHTML !== html) { el.dept.innerHTML = html; el.dept.value = list.includes(current) ? current : ''; }
+  }
+  function renderHeader() {
+    renderDepartments();
+    el.eventTag.textContent = cfg.eventTag || DEFAULT_CFG.eventTag;
+    el.eventName.textContent = cfg.eventName || DEFAULT_CFG.eventName;
+    el.eventYear.textContent = cfg.eventYear || DEFAULT_CFG.eventYear;
+    const name = sport ? sport.name : '';
+    el.formTitle.textContent = `Đăng ký môn ${name}`;
+    el.tableTitle.textContent = `Bảng đăng ký thi đấu ${name}`;
+    el.bTitle.textContent = `Sơ đồ thi đấu ${name}`;
+    document.title = `Giải thể thao 2026 · ${name}`;
+  }
+
+  function renderCountdown() {
+    const ms = deadlineMs();
+    el.deadlineText.textContent = fmtDeadline(deadlineIso());
+    let diff = ms - Date.now();
+    if (isNaN(ms)) diff = 0;
+    const closed = diff <= 0;
+    if (closed) diff = 0;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    el.cdD.textContent = pad(d); el.cdH.textContent = pad(h); el.cdM.textContent = pad(m); el.cdS.textContent = pad(s);
+    el.tileTime.classList.toggle('closed', closed);
+    el.deadlineStatus.className = 'deadline-status' + (closed ? ' closed' : '');
+    el.deadlineStatus.textContent = closed ? 'Đã hết thời gian đăng ký' : (d === 0 && h < 1 ? 'Sắp hết giờ, hãy đăng ký ngay' : 'Còn thời gian đăng ký');
+    updateFormState();
+  }
+
+  function renderSlots() {
+    const n = S();
+    const mixed = isMixed();
+    el.slotsMixed.hidden = !mixed;
+    el.slotsSingle.hidden = mixed;
+    if (mixed) {
+      const lm = leftOf('M'), lf = leftOf('F');
+      el.leftM.innerHTML = `${lm}<small>/${n}</small>`;
+      el.leftF.innerHTML = `${lf}<small>/${n}</small>`;
+      el.leftM.className = 'slot-num' + (lm === 0 ? ' full' : lm <= 3 ? ' low' : '');
+      el.leftF.className = 'slot-num' + (lf === 0 ? ' full' : lf <= 3 ? ' low' : '');
+      el.barM.style.width = `${Math.min(100, countOf('M') / n * 100)}%`;
+      el.barF.style.width = `${Math.min(100, countOf('F') / n * 100)}%`;
+      el.slotsFoot.textContent = (lm === 0 && lf === 0) ? `Đã đủ ${n} đội. Cảm ơn mọi người đã tham gia!` : 'Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.';
+      el.cntM.textContent = lm === 0 ? 'Hết slot' : `còn ${lm}`;
+      el.cntF.textContent = lf === 0 ? 'Hết slot' : `còn ${lf}`;
+      el.radioM.classList.toggle('full-slot', lm === 0);
+      el.radioF.classList.toggle('full-slot', lf === 0);
+    } else {
+      const left = leftOf(), cap = playerCap();
+      el.slotTagAll.textContent = 'Slot';
+      el.leftAll.innerHTML = `${left}<small>/${cap}</small>`;
+      el.leftAll.className = 'slot-num' + (left === 0 ? ' full' : left <= 3 ? ' low' : '');
+      el.barAll.style.width = `${Math.min(100, regs.length / cap * 100)}%`;
+      el.slotsFoot.textContent = left === 0
+        ? `Đã đủ ${cap} vận động viên${isPair() ? `, tương ứng ${n} đôi` : ''}. Cảm ơn mọi người đã tham gia!`
+        : (isPair() ? `${cap} slot cho ${n} đôi, bốc thăm ghép cặp ngẫu nhiên khi đủ người.` : 'Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.');
+      el.cntM.textContent = ''; el.cntF.textContent = '';
+      el.radioM.classList.remove('full-slot'); el.radioF.classList.remove('full-slot');
+    }
+    updateFormState();
+  }
+
+  function renderTable() {
+    const rows = filter === 'all' ? regs : regs.filter(r => r.gender === filter);
+    el.totalChip.textContent = regs.length;
+    el.tabRegBadge.textContent = `${regs.length}/${capacity(sport)}`;
+    el.segM.textContent = countOf('M');
+    el.segF.textContent = countOf('F');
+    el.tbody.innerHTML = rows.map((r, i) => `
+      <tr data-id="${esc(r.id)}" class="${r.id === lastAddedId ? 'fresh' : ''}">
+        <td class="idx">${i + 1}</td>
+        <td class="name"><span class="g ${r.gender === 'F' ? 'f' : 'm'}" title="${r.gender === 'F' ? 'Nữ' : 'Nam'}">${r.gender === 'F' ? 'N' : 'M'}</span>${esc(r.name)}</td>
+        <td class="code">${esc(r.code)}</td>
+        <td class="dept">${esc(r.dept)}</td>
+        <td class="ts">${fmtTs(r.ts)}</td>
+        <td class="act"><button type="button" class="x" data-del="${esc(r.id)}" title="Xoá đăng ký (cần mã xác nhận)" aria-label="Xoá ${esc(r.name)}">×</button></td>
+      </tr>`).join('');
+    el.empty.hidden = rows.length > 0;
+    el.footRight.textContent = regs.length ? `Đăng ký gần nhất: ${fmtTs(regs[regs.length - 1].ts)}` : '';
+    lastAddedId = null;
+  }
+
+  function updateFormState() {
+    const closed = isClosed();
+    const g = (el.form.elements.gender.value || '');
+    const allFull = isMixed() ? (leftOf('M') === 0 && leftOf('F') === 0) : leftOf() === 0;
+    const genderFull = isMixed() && g && leftOf(g) === 0;
+    el.submit.disabled = closed || allFull || submitting || genderFull;
+    if (submitting) el.submit.textContent = 'Đang gửi…';
+    else if (closed) el.submit.textContent = 'Đã hết hạn đăng ký';
+    else if (allFull) el.submit.textContent = 'Đã hết slot';
+    else if (genderFull) el.submit.textContent = `Hết slot ${g === 'M' ? 'nam' : 'nữ'}`;
+    else el.submit.textContent = `Gửi đăng ký${sport ? ' môn ' + sport.name : ''}`;
+    [...el.form.querySelectorAll('input, select')].forEach(i => { i.disabled = closed || allFull; });
+  }
+
+  // ---------- Bracket model ----------
+  // Single-elimination for N = 4, 8, 16 or 32 teams. Rounds 0..R-1 (R-1 = final); 'T' = third-place match.
+  function roundNames(R) {
+    const tail = ['Chung kết', 'Bán kết', 'Tứ kết'];
+    return Array.from({ length: R }, (_, r) => {
+      const fromEnd = R - 1 - r;
+      return fromEnd < 3 ? tail[fromEnd] : `Vòng 1/${2 ** (fromEnd + 1)}`;
+    });
+  }
+  const key = (r, i) => `${r}-${i}`;
+  const bracketSize = () => (bracket && bracket.size) || (bracket && bracket.teams ? bracket.teams.length : 0);
+  const roundsCount = () => Math.round(Math.log2(bracketSize() || 2));
+  const bracketSupported = (n) => [4, 8, 16, 32].includes(n);
+
+  function teamsOf(r, i) {
+    if (!bracket) return [null, null];
+    const T = bracket.teams, R = roundsCount();
+    if (r === 0) return [T[2 * i] || null, T[2 * i + 1] || null];
+    if (r === 'T') return [loserOf(R - 2, 0), loserOf(R - 2, 1)];
+    return [winnerOf(r - 1, 2 * i), winnerOf(r - 1, 2 * i + 1)];
+  }
+  function winnerOf(r, i) {
+    const res = bracket.results && bracket.results[key(r, i)];
+    if (!res) return null;
+    const [a, b] = teamsOf(r, i);
+    return res === 'A' ? a : b;
+  }
+  function loserOf(r, i) {
+    const res = bracket.results && bracket.results[key(r, i)];
+    if (!res) return null;
+    const [a, b] = teamsOf(r, i);
+    return res === 'A' ? b : a;
+  }
+  function clearDownstream(results, r, i) {
+    const R = roundsCount();
+    if (r === 'T' || r === R - 1) return;
+    const nr = r + 1, ni = Math.floor(i / 2);
+    delete results[key(nr, ni)];
+    clearDownstream(results, nr, ni);
+    if (r === R - 2) delete results[key('T', 0)];
+  }
+  const teamLabel = (t) => t ? t.members.map(m => shortName(m.name)).join(' & ') : '';
+  const teamFull = (t) => t ? `Đội ${t.n}: ${t.members.map(m => m.name).join(' & ')}` : '';
+  const unitWord = () => fmtOf(sport) === 'single' ? 'VĐV' : 'đội';
+
+  function renderBracket() {
+    const full = isFull();
+    const n = S();
+    const has = !!(bracket && Array.isArray(bracket.teams) && bracket.teams.length);
+    const supported = bracketSupported(n);
+    const name = sport ? sport.name : '';
+    el.btnPair.textContent = fmtOf(sport) === 'single' ? 'Bốc thăm sơ đồ' : 'Tự động xếp cặp';
+    const cap = playerCap();
+    el.tabBracketBadge.textContent = has ? (winnerOf(roundsCount() - 1, 0) ? 'Đã có vô địch' : `${bracket.teams.length} ${unitWord()}`) : (full && supported ? 'Sẵn sàng' : '');
+    el.btnPair.disabled = !full || has || !supported;
+    el.btnPair.hidden = has;
+    el.btnRepair.hidden = !has;
+    if (has) {
+      const champ = winnerOf(roundsCount() - 1, 0);
+      el.bStatus.textContent = champ ? `Vô địch: ${teamLabel(champ)}` : `${bracket.teams.length} ${unitWord()} · bốc thăm lúc ${fmtTs(bracket.createdAt)}`;
+      el.bStatus.className = 'status' + (champ ? ' ready' : '');
+    } else if (!supported) {
+      el.bStatus.textContent = `Sơ đồ tự động chỉ hỗ trợ 4, 8, 16 hoặc 32 ${unitWord()} (môn này: ${n})`;
+      el.bStatus.className = 'status';
+    } else if (full) {
+      el.bStatus.textContent = 'Đã đủ số lượng, sẵn sàng bốc thăm';
+      el.bStatus.className = 'status ready';
+    } else {
+      el.bStatus.textContent = isMixed()
+        ? `Mở khi đủ ${n} nam và ${n} nữ (hiện ${countOf('M')}/${countOf('F')})`
+        : `Mở khi đủ ${cap} vận động viên (hiện ${regs.length})`;
+      el.bStatus.className = 'status';
+    }
+    el.bEmptyText.textContent = isMixed()
+      ? `Khi đủ ${n} nam và ${n} nữ đăng ký môn ${name}, ban tổ chức bấm "Tự động xếp cặp" để bốc thăm ngẫu nhiên ${n} đội và lập sơ đồ.`
+      : (isPair()
+        ? `Khi đủ ${cap} người đăng ký môn ${name}, ban tổ chức bấm "Tự động xếp cặp" để bốc thăm ngẫu nhiên ${n} đôi và lập sơ đồ.`
+        : `Khi đủ ${cap} vận động viên đăng ký môn ${name}, ban tổ chức bấm "Bốc thăm sơ đồ" để xếp ngẫu nhiên các cặp đấu.`);
+    el.bEmpty.hidden = has;
+    el.bWrap.hidden = !has;
+    if (!has) return;
+    el.bSvg.innerHTML = buildBracketSvg();
+    const mixedTeams = bracket.teams[0].members.length > 1;
+    const genderCols = bracket.format !== 'pair' && bracket.teams[0].members.some(m => m.gender === 'F');
+    el.pairsHead.innerHTML = mixedTeams
+      ? (genderCols
+        ? '<tr><th scope="col">Đội</th><th scope="col">VĐV nam</th><th scope="col">VĐV nữ</th><th scope="col">Trận đầu</th></tr>'
+        : '<tr><th scope="col">Đội</th><th scope="col">Thành viên 1</th><th scope="col">Thành viên 2</th><th scope="col">Trận đầu</th></tr>')
+      : '<tr><th scope="col">Số</th><th scope="col">Vận động viên</th><th scope="col">Phòng</th><th scope="col">Trận đầu</th></tr>';
+    el.pairsBody.innerHTML = bracket.teams.map((t, idx) => {
+      const opp = bracket.teams[idx % 2 === 0 ? idx + 1 : idx - 1];
+      const first = `Trận ${Math.floor(idx / 2) + 1} · gặp ${opp ? (mixedTeams ? 'đội ' + opp.n : shortName(opp.members[0].name)) : '—'}`;
+      if (mixedTeams) {
+        const m = genderCols ? (t.members.find(x => x.gender === 'M') || t.members[0]) : t.members[0];
+        const f = genderCols ? (t.members.find(x => x.gender === 'F') || t.members[1]) : t.members[1];
+        return `<tr><td class="team-no">${t.n}</td><td>${esc(m.name)}<small>${esc(m.dept || '')}</small></td><td>${esc(f.name)}<small>${esc(f.dept || '')}</small></td><td>${first}</td></tr>`;
+      }
+      const p = t.members[0];
+      return `<tr><td class="team-no">${t.n}</td><td>${esc(p.name)}<small>Mã NV ${esc(p.code || '')}</small></td><td>${esc(p.dept || '')}</td><td>${first}</td></tr>`;
+    }).join('');
+  }
+
+  function buildBracketSvg() {
+    const N = bracketSize(), R = roundsCount(), M0 = N / 2;
+    const MW = 216, MH = 54, RG = 14, CW = 268, PADX = 8, PADY = 34;
+    const x = (r) => PADX + r * CW;
+    const centers = [];
+    centers[0] = Array.from({ length: M0 }, (_, i) => PADY + i * (MH + RG) + MH / 2);
+    for (let r = 1; r < R; r++) centers[r] = Array.from({ length: M0 >> r }, (_, i) => (centers[r - 1][2 * i] + centers[r - 1][2 * i + 1]) / 2);
+    const H = PADY + M0 * (MH + RG) + 6;
+    const W = PADX * 2 + (R - 1) * CW + MW;
+    const names = roundNames(R);
+    let out = '';
+
+    names.forEach((nm, r) => { out += `<text class="bk-col" x="${x(r)}" y="18">${nm}</text>`; });
+
+    for (let r = 0; r < R - 1; r++) {
+      for (let i = 0; i < (M0 >> r); i++) {
+        const x1 = x(r) + MW, y1 = centers[r][i];
+        const x2 = x(r + 1), y2 = centers[r + 1][Math.floor(i / 2)];
+        const xm = x1 + (x2 - x1) / 2;
+        const won = !!(bracket.results && bracket.results[key(r, i)]);
+        out += `<path class="bk-link ${won ? 'won' : ''}" d="M${x1},${y1} H${xm} V${y2} H${x2}"/>`;
+      }
+    }
+    for (let r = 0; r < R; r++) for (let i = 0; i < (M0 >> r); i++) out += matchSvg(r, i, x(r), centers[r][i] - MH / 2, MW, MH);
+
+    // champion box above the final, third-place match below it
+    const fx = x(R - 1), fy = centers[R - 1][0] - MH / 2;
+    const champ = winnerOf(R - 1, 0);
+    const champY = Math.max(24, fy - 62);
+    out += `<rect class="bk-champ-box" x="${fx}" y="${champY}" width="${MW}" height="46" rx="8"/>`;
+    out += `<text class="bk-champ-lbl" x="${fx + 12}" y="${champY + 17}">Vô địch</text>`;
+    out += `<text class="bk-champ-name" x="${fx + 12}" y="${champY + 36}">${champ ? esc(truncate(teamLabel(champ), 26)) : '—'}</text>`;
+    if (R >= 2) {
+      const ty = fy + MH + 56;
+      out += `<text class="bk-third-lbl" x="${fx}" y="${ty - 10}">Tranh hạng Ba</text>`;
+      out += matchSvg('T', 0, fx, ty, MW, MH);
+    }
+    return `<svg viewBox="0 0 ${W} ${Math.max(H, fy + MH + 56 + MH + 10)}" role="img" aria-label="Sơ đồ thi đấu ${N} ${unitWord()}">${out}</svg>`;
+  }
+
+  function matchSvg(r, i, x, y, MW, MH) {
+    const [a, b] = teamsOf(r, i);
+    const res = bracket.results && bracket.results[key(r, i)];
+    const clickable = !!(a && b);
+    const row = (t, side, ry) => {
+      const cls = ['bk-team', !t ? 'tbd' : '', clickable ? 'clickable' : '', res ? (res === side ? 'win' : 'lose') : ''].join(' ');
+      const label = t ? esc(truncate(teamLabel(t), 24)) : 'Chờ kết quả';
+      return `<g class="${cls}" data-r="${r}" data-i="${i}" data-side="${side}">
+        <title>${t ? esc(teamFull(t)) : 'Chưa xác định'}</title>
+        <rect class="bk-hit" x="${x + 1}" y="${ry}" width="${MW - 2}" height="${MH / 2 - 1}" rx="6"/>
+        ${t ? `<text class="bk-seed" x="${x + 10}" y="${ry + 18}">${t.n}</text>` : ''}
+        <text class="bk-name" x="${x + (t ? 34 : 12)}" y="${ry + 18}">${label}</text>
+        ${res === side ? `<circle class="bk-win-mark" cx="${x + MW - 12}" cy="${ry + MH / 4}" r="3.5"/>` : ''}
+      </g>`;
+    };
+    return `<g class="bk-match">
+      <rect class="bk-box ${res ? 'done' : ''}" x="${x}" y="${y}" width="${MW}" height="${MH}" rx="8"/>
+      ${row(a, 'A', y + 1)}
+      <line class="bk-sep" x1="${x + 6}" x2="${x + MW - 6}" y1="${y + MH / 2}" y2="${y + MH / 2}"/>
+      ${row(b, 'B', y + MH / 2 + 1)}
+    </g>`;
+  }
+
+  function renderAll() { renderHeader(); renderSports(); renderCountdown(); renderSlots(); renderTable(); renderBracket(); }
+
+  // ---------- Validation ----------
+  function validate() {
+    const f = el.form.elements;
+    const data = {
+      name: norm(f.name.value), dob: f.dob.value, code: norm(f.code.value),
+      email: norm(f.email.value).toLowerCase(), phone: norm(f.phone.value).replace(/[\s.\-]/g, ''),
+      gender: f.gender.value, dept: norm(f.dept.value)
+    };
+    const bad = {};
+    if (data.name.length < 2) bad.name = true;
+    const dob = new Date(data.dob);
+    if (!data.dob || isNaN(dob) || dob > new Date() || dob.getFullYear() < 1940) bad.dob = true;
+    if (!data.code) bad.code = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) bad.email = true;
+    if (!/^0\d{9}$/.test(data.phone)) bad.phone = true;
+    if (data.gender !== 'M' && data.gender !== 'F') bad.gender = true;
+    if (!data.dept) bad.dept = true;
+    el.form.querySelectorAll('.field[data-field]').forEach(node => node.classList.toggle('invalid', !!bad[node.dataset.field]));
+    const firstBad = Object.keys(bad)[0];
+    if (firstBad) {
+      const target = el.form.querySelector(`.field[data-field="${firstBad}"] input, .field[data-field="${firstBad}"] select`);
+      if (target) target.focus();
+      return null;
+    }
+    return data;
+  }
+
+  // ---------- Paths ----------
+  const regsPath = (sp) => `sports/${sp.id}/registrations`;
+  const bracketPath = (sp) => `sports/${sp.id}/bracket/main`;
+  const lockPath = (sp) => `locks/register-${sp.id}`;
+
+  // ---------- Persistence: local fallback ----------
+  function loadLocal() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      if (raw.local && typeof raw.local === 'object') local = { regs: raw.local.regs || {}, bracket: raw.local.bracket || {} };
+    } catch (e) { /* storage unavailable: run in memory */ }
+  }
+  function saveLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ local })); } catch (e) { /* ignore */ }
+  }
+  function loadLocalSport() {
+    regs = (local.regs[sport.id] || []).slice();
+    bracket = local.bracket[sport.id] || null;
+    recountLocal();
+  }
+  function recountLocal() {
+    counts = {};
+    sports().forEach(sp => {
+      const list = local.regs[sp.id] || [];
+      counts[sp.id] = { M: list.filter(r => r.gender === 'M').length, F: list.filter(r => r.gender === 'F').length, total: list.length };
+    });
+  }
+  async function saveBracket(next) {
+    if (mode === 'sheets') {
+      const err = adminResult(await apiPost({ action: 'saveBracket', sport: sport.id, bracket: next, pin: sessionPin }));
+      if (err) throw err;
+      brackets[sport.id] = next; bracket = next; renderBracket();
+      refreshSheets(true);
+      return;
+    }
+    if (db) await db.doc(bracketPath(sport)).set(next);
+    else { bracket = next; local.bracket[sport.id] = next; saveLocal(); renderBracket(); }
+  }
+
+  // ---------- Subscriptions per sport ----------
+  function subscribeSport() {
+    if (unsubRegs) { unsubRegs(); unsubRegs = null; }
+    if (unsubBracket) { unsubBracket(); unsubBracket = null; }
+    if (mode === 'sheets') { applySheetsSelection(); return; }
+    if (!db) { loadLocalSport(); return; }
+    regs = []; bracket = null; dbReady = false;
+    const sp = sport;
+    unsubRegs = db.collection(regsPath(sp)).orderBy('ts', 'asc').onSnapshot(snap => {
+      if (!sport || sport.id !== sp.id) return;
+      regs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (dbReady) {
+        const added = snap.docChanges().filter(c => c.type === 'added');
+        if (added.length === 1) lastAddedId = added[0].doc.id;
+      }
+      dbReady = true;
+      counts[sp.id] = { M: countOf('M'), F: countOf('F'), total: regs.length };
+      setMode('live', snap.metadata.fromCache ? 'Đang đồng bộ…' : 'Trực tuyến · cập nhật theo thời gian thực');
+      renderAll();
+    }, () => {
+      setMode('local', 'Mất kết nối dữ liệu, hãy tải lại trang');
+      showMsg('warn', 'Mất kết nối tới kho dữ liệu chung. Tải lại trang để tiếp tục.');
+    });
+    unsubBracket = db.doc(bracketPath(sp)).onSnapshot(snap => {
+      if (!sport || sport.id !== sp.id) return;
+      bracket = snap.exists ? snap.data() : null;
+      renderBracket();
+    }, () => {});
+  }
+  // light subscriptions on the other sports so the selector chips show live counts
+  function subscribeCounts() {
+    unsubCounts.forEach(u => u()); unsubCounts = [];
+    if (!db) return;
+    sports().forEach(sp => {
+      const u = db.collection(regsPath(sp)).onSnapshot(snap => {
+        let M = 0, F = 0;
+        snap.docs.forEach(d => { const g = d.data().gender; if (g === 'M') M++; else if (g === 'F') F++; });
+        counts[sp.id] = { M, F, total: snap.size };
+        renderSports();
+      }, () => {});
+      unsubCounts.push(u);
+    });
+  }
+
+  // ---------- Register ----------
+  async function register(data) {
+    const id = safeId(data.code);
+    const record = { ...data, id, sport: sport.id, ts: new Date().toISOString(), by: clientId };
+
+    if (mode === 'sheets') {
+      const res = await apiPost({ action: 'register', sport: sport.id, data });
+      if (!res || !res.ok) throw { code: (res && res.code) || 'unavailable' };
+      allRegs = [...allRegs, { sport: sport.id, id: res.id || id, name: data.name, code: data.code, gender: data.gender, dept: data.dept, ts: res.ts || record.ts }];
+      applySheetsSelection();
+      refreshSheets(true);
+      return res.id || id;
+    }
+
+    if (!db) {
+      if (regs.some(r => r.id === id)) throw { code: 'duplicate' };
+      if (leftOf(data.gender) === 0) throw { code: 'full' };
+      if (isClosed()) throw { code: 'closed' };
+      regs = [...regs, record];
+      local.regs[sport.id] = regs;
+      saveLocal(); recountLocal();
+      return id;
+    }
+
+    const lock = db.doc(lockPath(sport));
+    let lease;
+    try { lease = await lock.acquire({ holder: clientId, ttlMs: 6000 }); }
+    catch (e) { throw mapDbErr(e); }
+    if (!lease.acquired) throw { code: 'busy' };
+
+    try {
+      const ref = db.collection(regsPath(sport)).doc(id);
+      const existing = await ref.get();
+      if (existing.exists) throw { code: 'duplicate' };
+      const q = isMixed() ? db.collection(regsPath(sport)).where('gender', '==', data.gender) : db.collection(regsPath(sport));
+      const same = await q.get();
+      if (same.size >= playerCap()) throw { code: 'full' };
+      if (isClosed()) throw { code: 'closed' };
+      await ref.set(record);
+      return id;
+    } catch (e) {
+      throw e && e.code && ['duplicate', 'full', 'closed'].includes(e.code) ? e : mapDbErr(e);
+    }
+  }
+
+  function mapDbErr(e) {
+    const code = e && e.code;
+    if (code === 'quota_exceeded') return { code: 'quota' };
+    if (code === 'invalid_argument') return { code: 'noperm' };
+    if (code === 'resource_exhausted') return { code: 'busy' };
+    return { code: 'unavailable', detail: e && e.message };
+  }
+
+  const ERR_TEXT = {
+    duplicate: 'Mã nhân viên này đã đăng ký môn này rồi. Mỗi người chỉ đăng ký một lần cho mỗi bộ môn.',
+    full: 'Rất tiếc, slot vừa hết. Bạn có thể liên hệ ban tổ chức để vào danh sách chờ.',
+    closed: 'Đã hết thời gian đăng ký.',
+    busy: 'Nhiều người đang đăng ký cùng lúc. Vui lòng bấm gửi lại sau vài giây.',
+    quota: 'Kho dữ liệu đã đầy. Vui lòng báo ban tổ chức.',
+    noperm: 'Tài khoản của bạn chỉ có quyền xem, không thể ghi dữ liệu. Vui lòng báo ban tổ chức cấp quyền.',
+    unavailable: 'Không kết nối được máy chủ. Kiểm tra mạng và thử lại.',
+    invalid: 'Dữ liệu gửi lên không hợp lệ. Kiểm tra lại các trường và thử lại.',
+    error: 'Máy chủ dữ liệu báo lỗi. Thử lại sau ít phút hoặc báo ban tổ chức.',
+    pin: 'Mã xác nhận không đúng.',
+    'pin-unset': 'Ban tổ chức chưa đặt mã xác nhận trong Google Sheet (tab Config, dòng pin).'
+  };
+
+  el.form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (submitting) return;
+    clearMsg();
+    if (isClosed()) { showMsg('bad', ERR_TEXT.closed); updateFormState(); return; }
+    const data = validate();
+    if (!data) { showMsg('bad', 'Vui lòng kiểm tra lại các trường được đánh dấu đỏ.'); return; }
+    if (leftOf(data.gender) === 0) { showMsg('bad', ERR_TEXT.full); return; }
+
+    const before = leftOf(data.gender);
+    const sportName = sport.name;
+    submitting = true; updateFormState();
+    try {
+      const id = await register(data);
+      lastAddedId = id;
+      const slotText = isMixed() ? `Slot ${data.gender === 'M' ? 'nam' : 'nữ'} còn lại` : 'Slot còn lại';
+      showMsg('ok', `Đăng ký môn ${sportName} thành công! ${data.name} đã có tên trong bảng. ${slotText}: ${Math.max(0, before - 1)}/${playerCap()}.`);
+      el.form.reset();
+      el.form.querySelectorAll('.field.invalid').forEach(n => n.classList.remove('invalid'));
+      if (mode === 'local') renderAll();
+    } catch (e) {
+      showMsg('bad', ERR_TEXT[e && e.code] || ERR_TEXT.unavailable);
+    } finally {
+      submitting = false; updateFormState();
+    }
+  });
+
+  const onFieldChange = (ev) => {
+    const node = ev.target.closest('.field');
+    if (node) node.classList.remove('invalid');
+    if (ev.target.name === 'gender') updateFormState();
+  };
+  el.form.addEventListener('input', onFieldChange);
+  el.form.addEventListener('change', onFieldChange);
+
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    filter = b.dataset.filter;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderTable();
+  }));
+
+  // Delete a row: PIN required
+  el.tbody.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('button[data-del]');
+    if (!btn) return;
+    const id = btn.dataset.del;
+    const r = regs.find(x => x.id === id);
+    if (!r) return;
+    const ok = await confirmAction({
+      title: 'Xoá đăng ký',
+      text: `Xoá đăng ký môn ${sport.name} của ${r.name} (mã ${r.code}). Slot sẽ được trả lại.`,
+      okLabel: 'Xoá đăng ký', danger: true
+    });
+    if (!ok) return;
+    btn.disabled = true;
+    try {
+      if (mode === 'sheets') {
+        const err = adminResult(await apiPost({ action: 'delete', sport: sport.id, id, pin: sessionPin }));
+        if (err) throw err;
+        allRegs = allRegs.filter(x => !(x.sport === sport.id && x.id === id));
+        applySheetsSelection();
+        refreshSheets(true);
+      }
+      else if (db) await db.collection(regsPath(sport)).doc(id).delete();
+      else { regs = regs.filter(x => x.id !== id); local.regs[sport.id] = regs; saveLocal(); recountLocal(); renderAll(); }
+      toast(`Đã xoá đăng ký của ${r.name}.`, 'ok');
+    } catch (e) { toast('Không xoá được: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); btn.disabled = false; }
+  });
+
+  // Draw: PIN required
+  async function doPairing(isRedo) {
+    if (!isFull() || !bracketSupported(S())) return;
+    const n = S();
+    const ok = await confirmAction({
+      title: isRedo ? 'Bốc thăm lại' : (fmtOf(sport) === 'single' ? 'Bốc thăm sơ đồ' : 'Tự động xếp cặp'),
+      text: isRedo
+        ? `Bốc thăm lại toàn bộ sơ đồ môn ${sport.name}. Mọi kết quả trận đấu hiện có sẽ bị xoá.`
+        : (isMixed()
+          ? `Bốc thăm ngẫu nhiên ghép ${n} nam với ${n} nữ thành ${n} đội và lập sơ đồ thi đấu môn ${sport.name}.`
+          : isPair()
+            ? `Bốc thăm ngẫu nhiên ghép ${n * 2} người thành ${n} đôi và lập sơ đồ thi đấu môn ${sport.name}.`
+            : `Bốc thăm ngẫu nhiên thứ tự ${n} vận động viên môn ${sport.name} và lập sơ đồ thi đấu.`),
+      okLabel: isRedo ? 'Bốc thăm lại' : 'Bốc thăm', danger: isRedo
+    });
+    if (!ok) return;
+    const pick = (r) => ({ id: r.id, name: r.name, dept: r.dept || '', code: r.code || '', gender: r.gender });
+    let teams;
+    if (isPair()) {
+      const players = shuffle(regs).slice(0, n * 2);
+      teams = Array.from({ length: n }, (_, i) => ({ n: i + 1, members: [pick(players[2 * i]), pick(players[2 * i + 1])] }));
+    } else if (isMixed()) {
+      const men = shuffle(regs.filter(r => r.gender === 'M')).slice(0, n);
+      const women = shuffle(regs.filter(r => r.gender === 'F')).slice(0, n);
+      teams = men.map((m, i) => ({ n: i + 1, members: [pick(m), pick(women[i])] }));
+    } else {
+      teams = shuffle(regs).slice(0, n).map((r, i) => ({ n: i + 1, members: [pick(r)] }));
+    }
+    const next = { createdAt: new Date().toISOString(), size: n, format: sport.format, teams, results: {} };
+    el.btnPair.disabled = true; el.btnRepair.disabled = true;
+    try { await saveBracket(next); toast('Đã bốc thăm xong. Sơ đồ thi đấu đã sẵn sàng.', 'ok'); }
+    catch (e) { toast('Không lưu được sơ đồ: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); }
+    finally { el.btnRepair.disabled = false; renderBracket(); }
+  }
+  el.btnPair.addEventListener('click', () => doPairing(false));
+  el.btnRepair.addEventListener('click', () => doPairing(true));
+
+  // Record a winner: click a team in the bracket (PIN required)
+  el.bSvg.addEventListener('click', async (ev) => {
+    const g = ev.target.closest('.bk-team.clickable');
+    if (!g || !bracket) return;
+    const r = g.dataset.r === 'T' ? 'T' : +g.dataset.r, i = +g.dataset.i, side = g.dataset.side;
+    const [a, b] = teamsOf(r, i);
+    if (!a || !b) return;
+    const chosen = side === 'A' ? a : b;
+    const current = bracket.results && bracket.results[key(r, i)];
+    const roundName = r === 'T' ? 'Tranh hạng Ba' : roundNames(roundsCount())[r];
+    let title, text, okLabel, danger = false;
+    if (current === side) {
+      title = 'Bỏ kết quả'; okLabel = 'Bỏ kết quả'; danger = true;
+      text = `${roundName}, trận ${i + 1}: bỏ kết quả ${teamLabel(chosen)} thắng. Kết quả các vòng sau phụ thuộc trận này cũng bị xoá.`;
+    } else if (current) {
+      title = 'Đổi đội thắng'; okLabel = 'Đổi'; danger = true;
+      text = `${roundName}, trận ${i + 1}: đổi đội thắng thành ${teamLabel(chosen)}. Kết quả các vòng sau phụ thuộc trận này sẽ bị xoá.`;
+    } else {
+      title = 'Ghi kết quả'; okLabel = 'Ghi đội thắng';
+      text = `${roundName}, trận ${i + 1}: ${teamLabel(chosen)} thắng ${teamLabel(side === 'A' ? b : a)}.`;
+    }
+    const ok = await confirmAction({ title, text, okLabel, danger });
+    if (!ok) return;
+    const results = { ...(bracket.results || {}) };
+    if (current === side) delete results[key(r, i)];
+    else results[key(r, i)] = side;
+    clearDownstream(results, r, i);
+    try { await saveBracket({ ...bracket, results }); }
+    catch (e) { toast('Không lưu được kết quả: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); }
+  });
+
+  // ---------- Boot ----------
+  function setMode(kind, text) { el.modePill.className = 'mode-pill ' + kind; el.modeText.textContent = text; }
+  function initialSportId() {
+    const fromHash = (location.hash || '').replace(/^#/, '');
+    if (fromHash && sports().some(sp => sp.id === fromHash)) return fromHash;
+    try { const saved = localStorage.getItem(LS_KEY + ':sport'); if (saved && sports().some(sp => sp.id === saved)) return saved; } catch (e) { /* ignore */ }
+    return sports()[0].id;
+  }
+
+  loadLocal();
+  try { selectTab(localStorage.getItem(LS_KEY + ':tab') === 'bracket' ? 'bracket' : 'reg'); } catch (e) { selectTab('reg'); }
+  selectSport(initialSportId());
+  setInterval(renderCountdown, 1000);
+
+  (async () => {
+    const hasClaude = typeof window.claude === 'object' && window.claude && typeof window.claude.use === 'function';
+    const dbCap = hasClaude ? await window.claude.use('db') : null;
+    if (!dbCap) {
+      if (SHEETS_API_URL) {
+        mode = 'sheets';
+        local = { regs: {}, bracket: {} }; counts = {}; regs = []; bracket = null;
+        renderAll();
+        setMode('live', 'Đang tải dữ liệu từ Google Sheets…');
+        await refreshSheets(false);
+        startSheetsPolling();
+        return;
+      }
+      setMode('local', 'Bản chạy thử · dữ liệu lưu trên máy này');
+      return;
+    }
+    mode = 'claude';
+    db = dbCap;
+    local = { regs: {}, bracket: {} }; counts = {}; regs = []; bracket = null;   // shared data replaces local demo rows
+    renderAll();
+    setMode('live', 'Đang đồng bộ…');
+
+    let configSeen = false;
+    db.doc('config/main').onSnapshot(snap => {
+      if (snap.exists) cfg = { ...DEFAULT_CFG, ...snap.data() };
+      const list = sports();
+      // keep the selection valid against the (possibly updated) sport list, then (re)subscribe
+      const keep = sport && list.find(sp => sp.id === sport.id);
+      sport = keep || list.find(sp => sp.id === initialSportId()) || list[0];
+      if (!configSeen || !keep) { configSeen = true; subscribeSport(); subscribeCounts(); }
+      else { subscribeCounts(); }
+      renderAll();
+    }, () => setMode('local', 'Mất kết nối cài đặt'));
+  })();
+})();
+</script>
+</body>
+</html>

@@ -817,13 +817,12 @@
   let mode = 'local';         // 'claude' | 'sheets' | 'local'
   let allRegs = [];           // sheets mode: registrations of every sport
   let brackets = {};          // sheets mode: {sportId: bracket}
-  let sessionPin = '';        // sheets mode: PIN typed this session, verified by the server on each action
+  let sessionPin = '';        // sheets mode: PIN typed for the current action, sent once and forgotten
   let local = { regs: {}, bracket: {} };   // local-mode storage, keyed by sport id
   let filter = 'all';
   let submitting = false;
   let lastAddedId = null;
   let dbReady = false;
-  let unlocked = false;       // PIN verified in this page session
   let unsubRegs = null, unsubBracket = null, unsubCounts = [];
 
   const $ = (id) => document.getElementById(id);
@@ -919,9 +918,11 @@
 
   // ---------- Confirm dialog with organiser PIN ----------
   // resolves false when cancelled; true when confirmed; with `score` option, { score } when confirmed
+  // Every action that changes shared data asks for the organiser PIN again. Nothing is remembered
+  // between actions, so a page left open on a shared screen cannot be used by someone else.
   function confirmAction({ title, text, okLabel, danger, score }) {
     return new Promise((resolve) => {
-      const needPin = !unlocked;
+      const needPin = true;
       const withScore = score !== undefined;
       if (needPin && !cfg.pinHash && mode !== 'sheets') {
         toast('Chức năng này chỉ dùng được trên bản trực tuyến đã cấu hình mã xác nhận.', 'bad');
@@ -945,12 +946,12 @@
         if (!needPin) return done(result());
         const pin = el.pinInput.value.trim();
         if (!pin) { el.pinErr.textContent = 'Vui lòng nhập mã.'; el.pinInput.focus(); return; }
-        if (mode === 'sheets') { sessionPin = pin; return done(result()); }   // server verifies
+        if (mode === 'sheets') { sessionPin = pin; return done(result()); }   // server verifies on this one call
         el.pinOk.disabled = true;
         let h = '';
         try { h = await sha256Hex(PIN_SALT + pin); } catch (e) { h = ''; }
         el.pinOk.disabled = false;
-        if (h && h === cfg.pinHash) { unlocked = true; done(result()); }
+        if (h && h === cfg.pinHash) done(result());
         else { el.pinErr.textContent = 'Mã không đúng.'; el.pinInput.select(); }
       };
       const onCancel = () => done(false);
@@ -1017,10 +1018,9 @@
   }
   // an admin call came back: map server codes, forget a wrong PIN
   function adminResult(res) {
-    if (res && res.ok) { unlocked = true; return null; }
-    const code = res && res.code;
-    if (code === 'pin' || code === 'pin-unset') { unlocked = false; sessionPin = ''; }
-    return { code: code || 'unavailable' };
+    sessionPin = '';   // used for one call only
+    if (res && res.ok) return null;
+    return { code: (res && res.code) || 'unavailable' };
   }
 
   // ---------- Tabs ----------

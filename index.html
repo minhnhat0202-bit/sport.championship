@@ -172,7 +172,7 @@
   .deadline-status { font-size: 12px; font-weight: 500; color: var(--muted); }
   .deadline-status.closed { color: var(--bad); font-weight: 600; }
 
-  .slots { display: flex; flex-direction: column; gap: 12px; margin-top: 2px; }
+  .slots { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; justify-content: center; flex: 1; }
   .slot-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
   .slot-tag {
     font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
@@ -376,6 +376,13 @@
   .btn-danger { background: var(--bad); color: #fff; }
   .btn-danger:hover { background: color-mix(in srgb, var(--bad) 85%, black); }
   .dlg .pin-err { font-size: 12px; color: var(--bad); min-height: 16px; }
+  .dlg .score-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .dlg .score-wrap label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .dlg .score-wrap .opt { font-weight: 400; }
+  .dlg .score-hint { font-size: 11.5px; color: var(--muted); }
+  input[type="text"].score { font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: .02em; }
+  .bk-score { font-family: var(--font-body); font-size: 11.5px; font-weight: 700; fill: var(--ok); font-variant-numeric: tabular-nums; }
+  .bk-team.lose .bk-score { fill: var(--muted); font-weight: 500; }
   input[type="password"].pin { letter-spacing: .3em; font-size: 18px; font-variant-numeric: tabular-nums; text-align: center; }
 
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -572,7 +579,7 @@
             <div class="unit"><div class="num" id="cd-m">00</div><div class="lbl">Phút</div></div>
             <div class="unit"><div class="num" id="cd-s">00</div><div class="lbl">Giây</div></div>
           </div>
-          <div class="deadline-status" id="deadline-status">Còn thời gian đăng ký</div>
+          <div class="deadline-status" id="deadline-status" hidden></div>
         </div>
 
         <div class="card tile" id="tile-slots">
@@ -596,7 +603,7 @@
               <span class="slot-num" id="left-all">16<small>/16</small></span>
             </div>
           </div>
-          <div class="slots-foot" id="slots-foot">Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.</div>
+          <div class="slots-foot" id="slots-foot" hidden></div>
         </div>
       </div>
 
@@ -721,7 +728,7 @@
         <span class="k-wait">Chưa có kết quả</span>
         <span class="k-win">Đội thắng, đi tiếp</span>
         <span class="k-champ">Vô địch</span>
-        <span id="bracket-tip">Ban tổ chức bấm vào tên đội để ghi đội thắng (cần mã xác nhận).</span>
+        <span id="bracket-tip">Ban tổ chức bấm vào tên đội để ghi đội thắng và tỷ số (cần mã xác nhận).</span>
       </div>
       <div class="table-scroll pairs-table">
         <table>
@@ -743,6 +750,11 @@
     <div class="pin-wrap" id="pin-wrap">
       <label for="pin-input">Mã xác nhận của ban tổ chức</label>
       <input type="password" class="pin" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="••••••">
+    </div>
+    <div class="score-wrap" id="score-wrap" hidden>
+      <label for="score-input">Tỷ số <span class="opt">(không bắt buộc)</span></label>
+      <input type="text" id="score-input" class="score" inputmode="text" autocomplete="off" maxlength="40" placeholder="VD: 2-0 hoặc 21-18, 21-15">
+      <span class="score-hint">Ghi theo thứ tự đội thắng trước, đội thua sau.</span>
     </div>
     <div class="pin-err" id="pin-err"></div>
     <div class="row">
@@ -832,6 +844,7 @@
     pairsHead: $('pairs-thead'), pairsBody: $('pairs-tbody'),
     dlg: $('pin-dialog'), pinForm: $('pin-form'), pinInput: $('pin-input'), pinErr: $('pin-err'), pinCancel: $('pin-cancel'),
     pinDesc: $('pin-desc'), pinTitle: $('pin-title'), pinWrap: $('pin-wrap'), pinOk: $('pin-ok'), toast: $('toast'),
+    scoreWrap: $('score-wrap'), scoreInput: $('score-input'),
     tabReg: $('tab-reg'), tabBracket: $('tab-bracket'), panelReg: $('panel-reg'), panelBracket: $('panel-bracket'),
     tabRegBadge: $('tab-reg-badge'), tabBracketBadge: $('tab-bracket-badge')
   };
@@ -905,9 +918,11 @@
   }
 
   // ---------- Confirm dialog with organiser PIN ----------
-  function confirmAction({ title, text, okLabel, danger }) {
+  // resolves false when cancelled; true when confirmed; with `score` option, { score } when confirmed
+  function confirmAction({ title, text, okLabel, danger, score }) {
     return new Promise((resolve) => {
       const needPin = !unlocked;
+      const withScore = score !== undefined;
       if (needPin && !cfg.pinHash && mode !== 'sheets') {
         toast('Chức năng này chỉ dùng được trên bản trực tuyến đã cấu hình mã xác nhận.', 'bad');
         return resolve(false);
@@ -915,24 +930,27 @@
       el.pinTitle.textContent = title || 'Xác nhận';
       el.pinDesc.textContent = text || '';
       el.pinWrap.hidden = !needPin;
+      el.scoreWrap.hidden = !withScore;
+      el.scoreInput.value = withScore ? String(score || '') : '';
       el.pinErr.textContent = '';
       el.pinInput.value = '';
       el.pinOk.textContent = okLabel || 'Xác nhận';
       el.pinOk.className = 'btn btn-small ' + (danger ? 'btn-danger' : 'btn-primary');
       el.pinOk.disabled = false;
       let settled = false;
+      const result = () => withScore ? { score: norm(el.scoreInput.value).slice(0, 40) } : true;
       const done = (ok) => { if (settled) return; settled = true; cleanup(); if (el.dlg.open) el.dlg.close(); resolve(ok); };
       const onSubmit = async (ev) => {
         ev.preventDefault();
-        if (!needPin) return done(true);
+        if (!needPin) return done(result());
         const pin = el.pinInput.value.trim();
         if (!pin) { el.pinErr.textContent = 'Vui lòng nhập mã.'; el.pinInput.focus(); return; }
-        if (mode === 'sheets') { sessionPin = pin; return done(true); }   // server verifies
+        if (mode === 'sheets') { sessionPin = pin; return done(result()); }   // server verifies
         el.pinOk.disabled = true;
         let h = '';
         try { h = await sha256Hex(PIN_SALT + pin); } catch (e) { h = ''; }
         el.pinOk.disabled = false;
-        if (h && h === cfg.pinHash) { unlocked = true; done(true); }
+        if (h && h === cfg.pinHash) { unlocked = true; done(result()); }
         else { el.pinErr.textContent = 'Mã không đúng.'; el.pinInput.select(); }
       };
       const onCancel = () => done(false);
@@ -947,7 +965,7 @@
       el.dlg.addEventListener('cancel', onCancel);
       el.dlg.addEventListener('close', onCancel);
       el.dlg.showModal();
-      setTimeout(() => (needPin ? el.pinInput : el.pinOk).focus(), 30);
+      setTimeout(() => (withScore ? el.scoreInput : needPin ? el.pinInput : el.pinOk).focus(), 30);
     });
   }
 
@@ -1099,7 +1117,8 @@
     el.cdD.textContent = pad(d); el.cdH.textContent = pad(h); el.cdM.textContent = pad(m); el.cdS.textContent = pad(s);
     el.tileTime.classList.toggle('closed', closed);
     el.deadlineStatus.className = 'deadline-status' + (closed ? ' closed' : '');
-    el.deadlineStatus.textContent = closed ? 'Đã hết thời gian đăng ký' : (d === 0 && h < 1 ? 'Sắp hết giờ, hãy đăng ký ngay' : 'Còn thời gian đăng ký');
+    el.deadlineStatus.textContent = closed ? 'Đã hết thời gian đăng ký' : (d === 0 && h < 1 ? 'Sắp hết giờ, hãy đăng ký ngay' : '');
+    el.deadlineStatus.hidden = !el.deadlineStatus.textContent;
     updateFormState();
   }
 
@@ -1116,7 +1135,7 @@
       el.leftF.className = 'slot-num' + (lf === 0 ? ' full' : lf <= 3 ? ' low' : '');
       el.barM.style.width = `${Math.min(100, countOf('M') / n * 100)}%`;
       el.barF.style.width = `${Math.min(100, countOf('F') / n * 100)}%`;
-      el.slotsFoot.textContent = (lm === 0 && lf === 0) ? `Đã đủ ${n} đội. Cảm ơn mọi người đã tham gia!` : 'Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.';
+      el.slotsFoot.textContent = (lm === 0 && lf === 0) ? `Đã đủ ${n} đội. Cảm ơn mọi người đã tham gia!` : '';
       el.cntM.textContent = lm === 0 ? 'Hết slot' : `còn ${lm}`;
       el.cntF.textContent = lf === 0 ? 'Hết slot' : `còn ${lf}`;
       el.radioM.classList.toggle('full-slot', lm === 0);
@@ -1129,10 +1148,11 @@
       el.barAll.style.width = `${Math.min(100, regs.length / cap * 100)}%`;
       el.slotsFoot.textContent = left === 0
         ? `Đã đủ ${cap} vận động viên${isPair() ? `, tương ứng ${n} đôi` : ''}. Cảm ơn mọi người đã tham gia!`
-        : (isPair() ? `${cap} slot cho ${n} đôi, bốc thăm ghép cặp ngẫu nhiên khi đủ người.` : 'Hệ thống tự trừ 1 slot sau mỗi đăng ký thành công.');
+        : '';
       el.cntM.textContent = ''; el.cntF.textContent = '';
       el.radioM.classList.remove('full-slot'); el.radioF.classList.remove('full-slot');
     }
+    el.slotsFoot.hidden = !el.slotsFoot.textContent;
     updateFormState();
   }
 
@@ -1203,14 +1223,16 @@
     const [a, b] = teamsOf(r, i);
     return res === 'A' ? b : a;
   }
-  function clearDownstream(results, r, i) {
+  function clearDownstream(results, r, i, scores) {
     const R = roundsCount();
     if (r === 'T' || r === R - 1) return;
     const nr = r + 1, ni = Math.floor(i / 2);
     delete results[key(nr, ni)];
-    clearDownstream(results, nr, ni);
-    if (r === R - 2) delete results[key('T', 0)];
+    if (scores) delete scores[key(nr, ni)];
+    clearDownstream(results, nr, ni, scores);
+    if (r === R - 2) { delete results[key('T', 0)]; if (scores) delete scores[key('T', 0)]; }
   }
+  const scoreOf = (r, i) => (bracket && bracket.scores && bracket.scores[key(r, i)]) || '';
   const teamLabel = (t) => t ? t.members.map(m => shortName(m.name)).join(' & ') : '';
   const teamFull = (t) => t ? `Đội ${t.n}: ${t.members.map(m => m.name).join(' & ')}` : '';
   const unitWord = () => fmtOf(sport) === 'single' ? 'VĐV' : 'đội';
@@ -1283,7 +1305,9 @@
 
   function buildBracketSvg() {
     const N = bracketSize(), R = roundsCount(), M0 = N / 2;
-    const MW = 216, MH = 54, RG = 14, CW = 268, PADX = 8, PADY = 34;
+    // boxes grow a little when any score is recorded so name + score fit on one line
+    const hasScores = !!(bracket.scores && Object.keys(bracket.scores).length);
+    const MW = hasScores ? 262 : 216, MH = 54, RG = 14, CW = MW + 52, PADX = 8, PADY = 34;
     const x = (r) => PADX + r * CW;
     const centers = [];
     centers[0] = Array.from({ length: M0 }, (_, i) => PADY + i * (MH + RG) + MH / 2);
@@ -1324,16 +1348,25 @@
   function matchSvg(r, i, x, y, MW, MH) {
     const [a, b] = teamsOf(r, i);
     const res = bracket.results && bracket.results[key(r, i)];
+    const score = res ? scoreOf(r, i) : '';
+    // "21-18, 21-15" is shown on the winner's row; the loser's row gets the mirrored score
+    const scoreFor = (side) => {
+      if (!score) return '';
+      if (res === side) return score;
+      return score.replace(/(\d+)\s*[-–:]\s*(\d+)/g, '$2-$1');
+    };
     const clickable = !!(a && b);
     const row = (t, side, ry) => {
       const cls = ['bk-team', !t ? 'tbd' : '', clickable ? 'clickable' : '', res ? (res === side ? 'win' : 'lose') : ''].join(' ');
-      const label = t ? esc(truncate(teamLabel(t), 24)) : 'Chờ kết quả';
+      const sc = scoreFor(side);
+      const maxName = sc ? Math.max(12, 33 - Math.ceil(sc.length * 0.9) - 1) : 24;
+      const label = t ? esc(truncate(teamLabel(t), maxName)) : 'Chờ kết quả';
       return `<g class="${cls}" data-r="${r}" data-i="${i}" data-side="${side}">
         <title>${t ? esc(teamFull(t)) : 'Chưa xác định'}</title>
         <rect class="bk-hit" x="${x + 1}" y="${ry}" width="${MW - 2}" height="${MH / 2 - 1}" rx="6"/>
         ${t ? `<text class="bk-seed" x="${x + 10}" y="${ry + 18}">${t.n}</text>` : ''}
         <text class="bk-name" x="${x + (t ? 34 : 12)}" y="${ry + 18}">${label}</text>
-        ${res === side ? `<circle class="bk-win-mark" cx="${x + MW - 12}" cy="${ry + MH / 4}" r="3.5"/>` : ''}
+        ${sc ? `<text class="bk-score" x="${x + MW - 10}" y="${ry + 18}" text-anchor="end">${esc(sc)}</text>` : (res === side ? `<circle class="bk-win-mark" cx="${x + MW - 12}" cy="${ry + MH / 4}" r="3.5"/>` : '')}
       </g>`;
     };
     return `<g class="bk-match">
@@ -1620,7 +1653,7 @@
     } else {
       teams = shuffle(regs).slice(0, n).map((r, i) => ({ n: i + 1, members: [pick(r)] }));
     }
-    const next = { createdAt: new Date().toISOString(), size: n, format: sport.format, teams, results: {} };
+    const next = { createdAt: new Date().toISOString(), size: n, format: sport.format, teams, results: {}, scores: {} };
     el.btnPair.disabled = true; el.btnRepair.disabled = true;
     try { await saveBracket(next); toast('Đã bốc thăm xong. Sơ đồ thi đấu đã sẵn sàng.', 'ok'); }
     catch (e) { toast('Không lưu được sơ đồ: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); }
@@ -1639,24 +1672,28 @@
     const chosen = side === 'A' ? a : b;
     const current = bracket.results && bracket.results[key(r, i)];
     const roundName = r === 'T' ? 'Tranh hạng Ba' : roundNames(roundsCount())[r];
-    let title, text, okLabel, danger = false;
+    let title, text, okLabel, danger = false, score;
     if (current === side) {
       title = 'Bỏ kết quả'; okLabel = 'Bỏ kết quả'; danger = true;
       text = `${roundName}, trận ${i + 1}: bỏ kết quả ${teamLabel(chosen)} thắng. Kết quả các vòng sau phụ thuộc trận này cũng bị xoá.`;
     } else if (current) {
-      title = 'Đổi đội thắng'; okLabel = 'Đổi'; danger = true;
+      title = 'Đổi đội thắng'; okLabel = 'Đổi'; danger = true; score = '';
       text = `${roundName}, trận ${i + 1}: đổi đội thắng thành ${teamLabel(chosen)}. Kết quả các vòng sau phụ thuộc trận này sẽ bị xoá.`;
     } else {
-      title = 'Ghi kết quả'; okLabel = 'Ghi đội thắng';
+      title = 'Ghi kết quả'; okLabel = 'Ghi đội thắng'; score = '';
       text = `${roundName}, trận ${i + 1}: ${teamLabel(chosen)} thắng ${teamLabel(side === 'A' ? b : a)}.`;
     }
-    const ok = await confirmAction({ title, text, okLabel, danger });
+    const ok = await confirmAction({ title, text, okLabel, danger, score });
     if (!ok) return;
     const results = { ...(bracket.results || {}) };
-    if (current === side) delete results[key(r, i)];
-    else results[key(r, i)] = side;
-    clearDownstream(results, r, i);
-    try { await saveBracket({ ...bracket, results }); }
+    const scores = { ...(bracket.scores || {}) };
+    if (current === side) { delete results[key(r, i)]; delete scores[key(r, i)]; }
+    else {
+      results[key(r, i)] = side;
+      if (ok && ok.score) scores[key(r, i)] = ok.score; else delete scores[key(r, i)];
+    }
+    clearDownstream(results, r, i, scores);
+    try { await saveBracket({ ...bracket, results, scores }); }
     catch (e) { toast('Không lưu được kết quả: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); }
   });
 

@@ -312,6 +312,16 @@
   .x:disabled { opacity: .4; cursor: wait; }
   .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
   .empty strong { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  /* waitlist block under the main table */
+  .wait-block { border-top: 2px dashed var(--line); background: color-mix(in srgb, var(--surface-2) 45%, transparent); }
+  .wait-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px 4px; }
+  .wait-head h3 { margin: 0; font-family: var(--font-display); font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .wait-head .wait-note { font-size: 12.5px; color: var(--muted); }
+  .wait-block tbody td { padding-top: 8px; padding-bottom: 8px; }
+  .wait-block td.idx { font-weight: 700; color: var(--accent); }
+  .wait-block td.name { font-weight: 500; }
+  .wait-block thead th { font-size: 11.5px; }
+  .btn-wait, .btn-wait:hover { background: var(--ink); color: #fff; }
   .table-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
 
   /* Bracket section */
@@ -697,6 +707,27 @@
           Người đăng ký đầu tiên sẽ xuất hiện ở đây.
         </div>
       </div>
+      <div class="wait-block" id="wait-block" hidden>
+        <div class="wait-head">
+          <h3>Hàng chờ <span class="count-chip" id="wait-chip">0</span></h3>
+          <span class="wait-note" id="wait-note">Khi có người rút, người đầu hàng chờ được đôn lên tự động.</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Thứ tự</th>
+                <th scope="col">Tên vận động viên</th>
+                <th scope="col">Mã nhân viên</th>
+                <th scope="col">Phòng</th>
+                <th scope="col">Thời gian đăng ký</th>
+                <th scope="col"><span class="sr">Thao tác</span></th>
+              </tr>
+            </thead>
+            <tbody id="wait-tbody"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="table-foot">
         <span>Sắp xếp theo thời gian đăng ký, sớm nhất ở trên. Xoá đăng ký cần mã xác nhận của ban tổ chức.</span>
         <span id="foot-right"></span>
@@ -781,7 +812,7 @@
   //   'pair'   = random pairs regardless of gender (slots = pairs; 2 x slots players may register)
   //   'single' = no pairing (slots = players)
   const DEFAULT_SPORTS = [
-    { id: 'cau-long', name: 'Cầu lông', format: 'mixed', slots: 16, note: 'Đôi nam nữ · tối đa 16 đôi' },
+    { id: 'cau-long', name: 'Cầu lông', format: 'mixed', slots: 16, note: 'Đôi nam nữ · tối đa 16 đôi', waitlist: 99 },
     { id: 'bida', name: 'Bida', format: 'pair', slots: 16, note: 'Đôi · tối đa 16 đôi' },
     { id: 'bong-ban', name: 'Bóng bàn', format: 'pair', slots: 8, note: 'Đôi · tối đa 8 đôi' }
   ];
@@ -809,7 +840,8 @@
 
   let cfg = { ...DEFAULT_CFG };
   let sport = null;           // the selected sport entry from cfg.sports
-  let regs = [];              // registrations of the selected sport
+  let regs = [];              // official registrations of the selected sport (status != 'wait')
+  let waits = [];             // waitlist of the selected sport, earliest first
   let counts = {};            // {sportId: {M, F, total}} for the selector chips
   let dbBracket = null;       // raw bracket document from the shared db, before the stale check
   let bracket = null;         // {createdAt, size, teams:[{n, members:[{id,name,dept,code,gender}]}], results:{'r-i':'A'|'B'}}
@@ -837,7 +869,8 @@
     form: $('reg-form'), formTitle: $('form-title'), submit: $('btn-submit'), msg: $('msg'),
     cntM: $('cnt-m'), cntF: $('cnt-f'), radioM: $('radio-m'), radioF: $('radio-f'),
     tableTitle: $('table-title'), totalChip: $('total-chip'), segM: $('seg-m'), segF: $('seg-f'),
-    tbody: $('tbody'), empty: $('empty'), footRight: $('foot-right'), dept: $('f-dept'),
+    tbody: $('tbody'), empty: $('empty'), footRight: $('foot-right'), dept: $('f-dept'), formHint: $('form-hint'),
+    waitBlock: $('wait-block'), waitChip: $('wait-chip'), waitBody: $('wait-tbody'), waitNote: $('wait-note'),
     bTitle: $('bracket-title'), bStatus: $('bracket-status'), btnPair: $('btn-pair'), btnRepair: $('btn-repair'),
     bEmpty: $('bracket-empty'), bEmptyText: $('bracket-empty-text'), bWrap: $('bracket-wrap'), bSvg: $('bracket-svg'), bHint: $('bracket-hint'),
     pairsHead: $('pairs-thead'), pairsBody: $('pairs-tbody'),
@@ -883,6 +916,20 @@
   // slots left for a gender (mixed) or overall (single)
   const leftOf = (g) => isMixed() ? Math.max(0, S() - countOf(g)) : Math.max(0, playerCap() - regs.length);
   const isFull = () => isMixed() ? (countOf('M') >= S() && countOf('F') >= S()) : regs.length >= playerCap();
+  // waitlist: sp.waitlist = max people waiting (per gender for mixed); 0/absent = no waitlist for that sport
+  const waitCapOf = (sp) => { const v = sp && sp.waitlist; if (v === true) return 99; const n = parseInt(v, 10); return n > 0 ? n : 0; };
+  const hasWaitlist = () => waitCapOf(sport) > 0;
+  const isWaitRow = (r) => String(r && r.status || '').toLowerCase() === 'wait';
+  const byTs = (a, b) => String(a.ts).localeCompare(String(b.ts));
+  const splitRegs = (list) => {
+    const active = [], wait = [];
+    (list || []).forEach(r => (isWaitRow(r) ? wait : active).push(r));
+    return { active: active.sort(byTs), wait: wait.sort(byTs) };
+  };
+  // people waiting for the same slots as gender g (mixed) or for any slot (pair, single)
+  const waitsOf = (g) => isMixed() ? waits.filter(r => r.gender === g) : waits;
+  const waitPos = (r) => waitsOf(r.gender).findIndex(x => x.id === r.id) + 1;
+  const waitLeftOf = (g) => Math.max(0, waitCapOf(sport) - waitsOf(g).length);
   // a saved bracket is only shown while every player in it is still registered; otherwise it is stale (list was cleared)
   const bracketMatches = (b, list) => {
     if (!b || !Array.isArray(b.teams) || !b.teams.length) return false;
@@ -997,14 +1044,15 @@
     applySheetsSelection();
   }
   function applySheetsSelection() {
-    regs = allRegs.filter(r => r.sport === sport.id).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+    ({ active: regs, wait: waits } = splitRegs(allRegs.filter(r => r.sport === sport.id)));
     bracket = liveBracket(brackets[sport.id], regs);
     counts = {};
-    sports().forEach(sp => {
-      const list = allRegs.filter(r => r.sport === sp.id);
-      counts[sp.id] = { M: list.filter(r => r.gender === 'M').length, F: list.filter(r => r.gender === 'F').length, total: list.length };
-    });
+    sports().forEach(sp => { counts[sp.id] = countList(allRegs.filter(r => r.sport === sp.id)); });
     renderAll();
+  }
+  function countList(list) {
+    const { active, wait } = splitRegs(list);
+    return { M: active.filter(r => r.gender === 'M').length, F: active.filter(r => r.gender === 'F').length, total: active.length, wait: wait.length };
   }
   async function refreshSheets(silent) {
     if (refreshing) return;
@@ -1059,7 +1107,7 @@
       const cap = capacity(sp);
       const full = fmtOf(sp) === 'mixed' ? (c.M >= slotsOf(sp) && c.F >= slotsOf(sp)) : c.total >= cap;
       const fallback = { mixed: 'Đôi nam nữ', pair: 'Đôi', single: 'Cá nhân' }[fmtOf(sp)];
-      const meta = `${esc(sp.note || fallback)} · <b>${c.total}/${cap}</b> người`;
+      const meta = `${esc(sp.note || fallback)} · <b>${c.total}/${cap}</b> người${c.wait ? ` · chờ ${c.wait}` : ''}`;
       return `<button type="button" class="sport" role="tab" data-sport="${esc(sp.id)}" aria-selected="${sport && sport.id === sp.id}">
         <span class="sport-name">${esc(sp.name)}</span>
         <span class="sport-meta ${full ? 'full' : ''}">${meta}</span>
@@ -1142,7 +1190,9 @@
       el.leftF.className = 'slot-num' + (lf === 0 ? ' full' : lf <= 3 ? ' low' : '');
       el.barM.style.width = `${Math.min(100, countOf('M') / n * 100)}%`;
       el.barF.style.width = `${Math.min(100, countOf('F') / n * 100)}%`;
-      el.slotsFoot.textContent = (lm === 0 && lf === 0) ? `Đã đủ ${n} đội. Cảm ơn mọi người đã tham gia!` : '';
+      el.slotsFoot.textContent = (lm === 0 && lf === 0)
+        ? (hasWaitlist() ? `Đã đủ ${n} đội. Vẫn có thể đăng ký vào hàng chờ, khi có người rút sẽ được đôn lên.` : `Đã đủ ${n} đội. Cảm ơn mọi người đã tham gia!`)
+        : (hasWaitlist() && (lm === 0 || lf === 0)) ? `Đã hết slot ${lm === 0 ? 'nam' : 'nữ'}. Bạn vẫn có thể đăng ký vào hàng chờ.` : '';
       el.cntM.textContent = lm === 0 ? 'Hết slot' : `còn ${lm}`;
       el.cntF.textContent = lf === 0 ? 'Hết slot' : `còn ${lf}`;
       el.radioM.classList.toggle('full-slot', lm === 0);
@@ -1154,7 +1204,7 @@
       el.leftAll.className = 'slot-num' + (left === 0 ? ' full' : left <= 3 ? ' low' : '');
       el.barAll.style.width = `${Math.min(100, regs.length / cap * 100)}%`;
       el.slotsFoot.textContent = left === 0
-        ? `Đã đủ ${cap} vận động viên${isPair() ? `, tương ứng ${n} đôi` : ''}. Cảm ơn mọi người đã tham gia!`
+        ? `Đã đủ ${cap} vận động viên${isPair() ? `, tương ứng ${n} đôi` : ''}. ${hasWaitlist() ? 'Vẫn có thể đăng ký vào hàng chờ.' : 'Cảm ơn mọi người đã tham gia!'}`
         : '';
       el.cntM.textContent = ''; el.cntF.textContent = '';
       el.radioM.classList.remove('full-slot'); el.radioF.classList.remove('full-slot');
@@ -1166,7 +1216,7 @@
   function renderTable() {
     const rows = filter === 'all' ? regs : regs.filter(r => r.gender === filter);
     el.totalChip.textContent = regs.length;
-    el.tabRegBadge.textContent = `${regs.length}/${capacity(sport)}`;
+    el.tabRegBadge.textContent = `${regs.length}/${capacity(sport)}` + (waits.length ? ` · chờ ${waits.length}` : '');
     el.segM.textContent = countOf('M');
     el.segF.textContent = countOf('F');
     el.tbody.innerHTML = rows.map((r, i) => `
@@ -1180,7 +1230,29 @@
       </tr>`).join('');
     el.empty.hidden = rows.length > 0;
     el.footRight.textContent = regs.length ? `Đăng ký gần nhất: ${fmtTs(regs[regs.length - 1].ts)}` : '';
+    renderWaitlist();
     lastAddedId = null;
+  }
+
+  function renderWaitlist() {
+    const show = waits.length > 0 || (hasWaitlist() && (isMixed() ? (leftOf('M') === 0 || leftOf('F') === 0) : leftOf() === 0));
+    el.waitBlock.hidden = !show;
+    if (!show) return;
+    const rows = filter === 'all' ? waits : waits.filter(r => r.gender === filter);
+    el.waitChip.textContent = isMixed() ? `${waitsOf('M').length} nam · ${waitsOf('F').length} nữ` : String(waits.length);
+    el.waitNote.textContent = isMixed()
+      ? 'Xếp theo giới tính. Khi một VĐV chính thức rút, người đầu hàng chờ cùng giới được đôn lên tự động.'
+      : 'Khi một VĐV chính thức rút, người đầu hàng chờ được đôn lên tự động.';
+    el.waitBody.innerHTML = rows.length ? rows.map(r => `
+      <tr data-id="${esc(r.id)}" class="${r.id === lastAddedId ? 'fresh' : ''}">
+        <td class="idx">${waitPos(r)}</td>
+        <td class="name"><span class="who"><span class="g ${r.gender === 'F' ? 'f' : 'm'}">${r.gender === 'F' ? 'Nữ' : 'Nam'}</span><span>${esc(r.name)}</span></span></td>
+        <td class="code">${esc(r.code)}</td>
+        <td class="dept">${esc(r.dept)}</td>
+        <td class="ts">${fmtTs(r.ts)}</td>
+        <td class="act"><button type="button" class="x" data-del="${esc(r.id)}" title="Xoá khỏi hàng chờ (cần mã xác nhận)" aria-label="Xoá ${esc(r.name)} khỏi hàng chờ">×</button></td>
+      </tr>`).join('')
+      : `<tr><td colspan="6" class="ts">Chưa có ai trong hàng chờ${filter === 'all' ? '' : (filter === 'M' ? ' nam' : ' nữ')}.</td></tr>`;
   }
 
   function updateFormState() {
@@ -1188,13 +1260,23 @@
     const g = (el.form.elements.gender.value || '');
     const allFull = isMixed() ? (leftOf('M') === 0 && leftOf('F') === 0) : leftOf() === 0;
     const genderFull = isMixed() && g && leftOf(g) === 0;
-    el.submit.disabled = closed || allFull || submitting || genderFull;
+    const wl = hasWaitlist();
+    // with a waitlist, a full slot only changes the button: the form stays open unless the waitlist itself is full
+    const waitFull = wl && (isMixed() ? (g ? waitLeftOf(g) === 0 : (waitLeftOf('M') === 0 && waitLeftOf('F') === 0)) : waitLeftOf() === 0);
+    const toWait = wl && !closed && (allFull || genderFull);
+    el.submit.disabled = closed || submitting || (wl ? (toWait && waitFull) : (allFull || genderFull));
+    el.submit.classList.toggle('btn-wait', toWait && !waitFull);
     if (submitting) el.submit.textContent = 'Đang gửi…';
     else if (closed) el.submit.textContent = 'Đã hết hạn đăng ký';
+    else if (toWait && waitFull) el.submit.textContent = 'Hàng chờ đã đầy';
+    else if (toWait) el.submit.textContent = isMixed() && g ? `Đăng ký vào hàng chờ ${g === 'M' ? 'nam' : 'nữ'}` : 'Đăng ký vào hàng chờ';
     else if (allFull) el.submit.textContent = 'Đã hết slot';
     else if (genderFull) el.submit.textContent = `Hết slot ${g === 'M' ? 'nam' : 'nữ'}`;
     else el.submit.textContent = `Gửi đăng ký${sport ? ' môn ' + sport.name : ''}`;
-    [...el.form.querySelectorAll('input, select')].forEach(i => { i.disabled = closed || allFull; });
+    el.formHint.textContent = toWait
+      ? 'Slot đã hết. Đăng ký vào hàng chờ: khi có người rút, người đầu hàng chờ được đôn lên chính thức và hiện tên trong bảng.'
+      : 'Mỗi mã nhân viên chỉ đăng ký một lần cho mỗi bộ môn. Tên bạn sẽ hiện trong bảng ngay sau khi gửi thành công.';
+    [...el.form.querySelectorAll('input, select')].forEach(i => { i.disabled = closed || (allFull && !wl); });
   }
 
   // ---------- Bracket model ----------
@@ -1430,16 +1512,18 @@
     try { localStorage.setItem(LS_KEY, JSON.stringify({ local })); } catch (e) { /* ignore */ }
   }
   function loadLocalSport() {
-    regs = (local.regs[sport.id] || []).slice();
+    ({ active: regs, wait: waits } = splitRegs(local.regs[sport.id] || []));
     bracket = liveBracket(local.bracket[sport.id], regs);
     recountLocal();
   }
   function recountLocal() {
     counts = {};
-    sports().forEach(sp => {
-      const list = local.regs[sp.id] || [];
-      counts[sp.id] = { M: list.filter(r => r.gender === 'M').length, F: list.filter(r => r.gender === 'F').length, total: list.length };
-    });
+    sports().forEach(sp => { counts[sp.id] = countList(local.regs[sp.id] || []); });
+  }
+  // local & claude modes: an official player left, move the first matching waiter up
+  function nextWaiter(gender) {
+    const list = isMixed() ? waits.filter(r => r.gender === gender) : waits;
+    return list[0] || null;
   }
   async function saveBracket(next) {
     if (mode === 'sheets') {
@@ -1463,14 +1547,14 @@
     const sp = sport;
     unsubRegs = db.collection(regsPath(sp)).orderBy('ts', 'asc').onSnapshot(snap => {
       if (!sport || sport.id !== sp.id) return;
-      regs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      ({ active: regs, wait: waits } = splitRegs(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
       bracket = liveBracket(dbBracket, regs);
       if (dbReady) {
         const added = snap.docChanges().filter(c => c.type === 'added');
         if (added.length === 1) lastAddedId = added[0].doc.id;
       }
       dbReady = true;
-      counts[sp.id] = { M: countOf('M'), F: countOf('F'), total: regs.length };
+      counts[sp.id] = { M: countOf('M'), F: countOf('F'), total: regs.length, wait: waits.length };
       setMode('live', snap.metadata.fromCache ? 'Đang đồng bộ…' : 'Trực tuyến · cập nhật theo thời gian thực');
       renderAll();
     }, () => {
@@ -1490,9 +1574,7 @@
     if (!db) return;
     sports().forEach(sp => {
       const u = db.collection(regsPath(sp)).onSnapshot(snap => {
-        let M = 0, F = 0;
-        snap.docs.forEach(d => { const g = d.data().gender; if (g === 'M') M++; else if (g === 'F') F++; });
-        counts[sp.id] = { M, F, total: snap.size };
+        counts[sp.id] = countList(snap.docs.map(d => d.data()));
         renderSports();
       }, () => {});
       unsubCounts.push(u);
@@ -1507,20 +1589,25 @@
     if (mode === 'sheets') {
       const res = await apiPost({ action: 'register', sport: sport.id, data });
       if (!res || !res.ok) throw { code: (res && res.code) || 'unavailable' };
-      allRegs = [...allRegs, { sport: sport.id, id: res.id || id, name: data.name, code: data.code, gender: data.gender, dept: data.dept, ts: res.ts || record.ts }];
+      allRegs = [...allRegs, { sport: sport.id, id: res.id || id, name: data.name, code: data.code, gender: data.gender, dept: data.dept, ts: res.ts || record.ts, status: res.waitlist ? 'wait' : '' }];
       applySheetsSelection();
       refreshSheets(true);
-      return res.id || id;
+      return { id: res.id || id, waitlist: !!res.waitlist, position: res.position || 0 };
     }
 
+    // local & claude modes decide here whether the person gets a slot or a place in the waitlist
+    const wantWait = leftOf(data.gender) === 0;
+    if (wantWait && !hasWaitlist()) throw { code: 'full' };
+    if (wantWait && waitLeftOf(data.gender) === 0) throw { code: 'wait-full' };
+    if (wantWait) record.status = 'wait';
+    const position = wantWait ? waitsOf(data.gender).length + 1 : 0;
+
     if (!db) {
-      if (regs.some(r => r.id === id)) throw { code: 'duplicate' };
-      if (leftOf(data.gender) === 0) throw { code: 'full' };
+      if (regs.some(r => r.id === id) || waits.some(r => r.id === id)) throw { code: 'duplicate' };
       if (isClosed()) throw { code: 'closed' };
-      regs = [...regs, record];
-      local.regs[sport.id] = regs;
-      saveLocal(); recountLocal();
-      return id;
+      local.regs[sport.id] = [...regs, ...waits, record];
+      loadLocalSport();
+      return { id, waitlist: wantWait, position };
     }
 
     const lock = db.doc(lockPath(sport));
@@ -1535,12 +1622,17 @@
       if (existing.exists) throw { code: 'duplicate' };
       const q = isMixed() ? db.collection(regsPath(sport)).where('gender', '==', data.gender) : db.collection(regsPath(sport));
       const same = await q.get();
-      if (same.size >= playerCap()) throw { code: 'full' };
+      const active = same.docs.filter(d => !isWaitRow(d.data())).length, waiting = same.size - active;
+      if (active >= playerCap()) {
+        if (!hasWaitlist()) throw { code: 'full' };
+        if (waiting >= waitCapOf(sport)) throw { code: 'wait-full' };
+        record.status = 'wait';
+      } else record.status = '';
       if (isClosed()) throw { code: 'closed' };
       await ref.set(record);
-      return id;
+      return { id, waitlist: record.status === 'wait', position: record.status === 'wait' ? waiting + 1 : 0 };
     } catch (e) {
-      throw e && e.code && ['duplicate', 'full', 'closed'].includes(e.code) ? e : mapDbErr(e);
+      throw e && e.code && ['duplicate', 'full', 'wait-full', 'closed'].includes(e.code) ? e : mapDbErr(e);
     }
   }
 
@@ -1554,7 +1646,8 @@
 
   const ERR_TEXT = {
     duplicate: 'Mã nhân viên này đã đăng ký môn này rồi. Mỗi người chỉ đăng ký một lần cho mỗi bộ môn.',
-    full: 'Rất tiếc, slot vừa hết. Bạn có thể liên hệ ban tổ chức để vào danh sách chờ.',
+    full: 'Rất tiếc, slot vừa hết.',
+    'wait-full': 'Hàng chờ đã đầy. Vui lòng liên hệ ban tổ chức.',
     closed: 'Đã hết thời gian đăng ký.',
     busy: 'Nhiều người đang đăng ký cùng lúc. Vui lòng bấm gửi lại sau vài giây.',
     quota: 'Kho dữ liệu đã đầy. Vui lòng báo ban tổ chức.',
@@ -1573,16 +1666,19 @@
     if (isClosed()) { showMsg('bad', ERR_TEXT.closed); updateFormState(); return; }
     const data = validate();
     if (!data) { showMsg('bad', 'Vui lòng kiểm tra lại các trường được đánh dấu đỏ.'); return; }
-    if (leftOf(data.gender) === 0) { showMsg('bad', ERR_TEXT.full); return; }
+    if (leftOf(data.gender) === 0 && !hasWaitlist()) { showMsg('bad', ERR_TEXT.full); return; }
+    if (leftOf(data.gender) === 0 && waitLeftOf(data.gender) === 0) { showMsg('bad', ERR_TEXT['wait-full']); return; }
 
     const before = leftOf(data.gender);
     const sportName = sport.name;
     submitting = true; updateFormState();
     try {
-      const id = await register(data);
-      lastAddedId = id;
-      const slotText = isMixed() ? `Slot ${data.gender === 'M' ? 'nam' : 'nữ'} còn lại` : 'Slot còn lại';
-      showMsg('ok', `Đăng ký môn ${sportName} thành công! ${data.name} đã có tên trong bảng. ${slotText}: ${Math.max(0, before - 1)}/${playerCap()}.`);
+      const res = await register(data);
+      lastAddedId = res.id;
+      const gText = data.gender === 'M' ? 'nam' : 'nữ';
+      const slotText = isMixed() ? `Slot ${gText} còn lại` : 'Slot còn lại';
+      if (res.waitlist) showMsg('ok', `Đã ghi tên ${data.name} vào hàng chờ${isMixed() ? ' ' + gText : ''} môn ${sportName}, thứ tự ${res.position}. Khi có người rút, bạn sẽ được đôn lên chính thức và hiện tên trong bảng.`);
+      else showMsg('ok', `Đăng ký môn ${sportName} thành công! ${data.name} đã có tên trong bảng. ${slotText}: ${Math.max(0, before - 1)}/${playerCap()}.`);
       el.form.reset();
       el.form.querySelectorAll('.field.invalid').forEach(n => n.classList.remove('invalid'));
       if (mode === 'local') renderAll();
@@ -1607,33 +1703,48 @@
     renderTable();
   }));
 
-  // Delete a row: PIN required
-  el.tbody.addEventListener('click', async (ev) => {
+  // Delete a row (official list or waitlist): PIN required
+  async function onDeleteClick(ev) {
     const btn = ev.target.closest('button[data-del]');
     if (!btn) return;
     const id = btn.dataset.del;
-    const r = regs.find(x => x.id === id);
+    const r = regs.find(x => x.id === id) || waits.find(x => x.id === id);
     if (!r) return;
+    const waiting = isWaitRow(r);
+    const up = !waiting ? nextWaiter(r.gender) : null;
     const ok = await confirmAction({
-      title: 'Xoá đăng ký',
-      text: `Xoá đăng ký môn ${sport.name} của ${r.name} (mã ${r.code}). Slot sẽ được trả lại.`,
-      okLabel: 'Xoá đăng ký', danger: true
+      title: waiting ? 'Xoá khỏi hàng chờ' : 'Xoá đăng ký',
+      text: waiting
+        ? `Xoá ${r.name} (mã ${r.code}) khỏi hàng chờ môn ${sport.name}.`
+        : `Xoá đăng ký môn ${sport.name} của ${r.name} (mã ${r.code}). ${up ? `${up.name} ở đầu hàng chờ sẽ được đôn lên thay.` : 'Slot sẽ được trả lại.'}`,
+      okLabel: waiting ? 'Xoá khỏi hàng chờ' : 'Xoá đăng ký', danger: true
     });
     if (!ok) return;
     btn.disabled = true;
     try {
+      let promoted = null;
       if (mode === 'sheets') {
-        const err = adminResult(await apiPost({ action: 'delete', sport: sport.id, id, pin: sessionPin }));
+        const res = await apiPost({ action: 'delete', sport: sport.id, id, pin: sessionPin });
+        const err = adminResult(res);
         if (err) throw err;
-        allRegs = allRegs.filter(x => !(x.sport === sport.id && x.id === id));
+        promoted = res.promoted || null;
+        allRegs = allRegs.filter(x => !(x.sport === sport.id && x.id === id)).map(x => (promoted && x.sport === sport.id && x.id === promoted.id) ? { ...x, status: '' } : x);
         applySheetsSelection();
         refreshSheets(true);
+      } else if (db) {
+        await db.collection(regsPath(sport)).doc(id).delete();
+        if (up) { await db.collection(regsPath(sport)).doc(up.id).set({ ...up, status: '' }); promoted = up; }
+      } else {
+        const rest = [...regs, ...waits].filter(x => x.id !== id).map(x => (up && x.id === up.id) ? { ...x, status: '' } : x);
+        if (up) promoted = up;
+        local.regs[sport.id] = rest;
+        saveLocal(); loadLocalSport(); renderAll();
       }
-      else if (db) await db.collection(regsPath(sport)).doc(id).delete();
-      else { regs = regs.filter(x => x.id !== id); local.regs[sport.id] = regs; saveLocal(); recountLocal(); renderAll(); }
-      toast(`Đã xoá đăng ký của ${r.name}.`, 'ok');
+      toast(waiting ? `Đã xoá ${r.name} khỏi hàng chờ.` : `Đã xoá đăng ký của ${r.name}.${promoted ? ` ${promoted.name} được đôn lên từ hàng chờ.` : ''}`, 'ok');
     } catch (e) { toast('Không xoá được: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); btn.disabled = false; }
-  });
+  }
+  el.tbody.addEventListener('click', onDeleteClick);
+  el.waitBody.addEventListener('click', onDeleteClick);
 
   // Draw: PIN required
   async function doPairing(isRedo) {

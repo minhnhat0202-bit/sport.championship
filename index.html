@@ -811,6 +811,7 @@
   let sport = null;           // the selected sport entry from cfg.sports
   let regs = [];              // registrations of the selected sport
   let counts = {};            // {sportId: {M, F, total}} for the selector chips
+  let dbBracket = null;       // raw bracket document from the shared db, before the stale check
   let bracket = null;         // {createdAt, size, teams:[{n, members:[{id,name,dept,code,gender}]}], results:{'r-i':'A'|'B'}}
   let db = null;              // claude.ai shared store (hosted version)
   let mode = 'local';         // 'claude' | 'sheets' | 'local'
@@ -882,6 +883,13 @@
   // slots left for a gender (mixed) or overall (single)
   const leftOf = (g) => isMixed() ? Math.max(0, S() - countOf(g)) : Math.max(0, playerCap() - regs.length);
   const isFull = () => isMixed() ? (countOf('M') >= S() && countOf('F') >= S()) : regs.length >= playerCap();
+  // a saved bracket is only shown while every player in it is still registered; otherwise it is stale (list was cleared)
+  const bracketMatches = (b, list) => {
+    if (!b || !Array.isArray(b.teams) || !b.teams.length) return false;
+    const ids = new Set((list || []).map(r => r.id));
+    return b.teams.every(t => Array.isArray(t.members) && t.members.every(m => m && ids.has(m.id)));
+  };
+  const liveBracket = (b, list) => bracketMatches(b, list) ? b : null;
   const norm = (s) => String(s || '').trim().replace(/\s+/g, ' ');
   const safeId = (code) => norm(code).toUpperCase().replace(/[^A-Za-z0-9_\-.~:@+]/g, '-').slice(0, 120) || ('X-' + Date.now());
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -990,7 +998,7 @@
   }
   function applySheetsSelection() {
     regs = allRegs.filter(r => r.sport === sport.id).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
-    bracket = brackets[sport.id] || null;
+    bracket = liveBracket(brackets[sport.id], regs);
     counts = {};
     sports().forEach(sp => {
       const list = allRegs.filter(r => r.sport === sp.id);
@@ -1248,6 +1256,7 @@
     el.btnPair.disabled = !full || has || !supported;
     el.btnPair.hidden = has;
     el.btnRepair.hidden = !has;
+    el.btnRepair.disabled = !full || !supported;
     if (has) {
       const champ = winnerOf(roundsCount() - 1, 0);
       el.bStatus.textContent = champ ? `Vô địch: ${teamLabel(champ)}` : `${bracket.teams.length} ${unitWord()} · bốc thăm lúc ${fmtTs(bracket.createdAt)}`;
@@ -1422,7 +1431,7 @@
   }
   function loadLocalSport() {
     regs = (local.regs[sport.id] || []).slice();
-    bracket = local.bracket[sport.id] || null;
+    bracket = liveBracket(local.bracket[sport.id], regs);
     recountLocal();
   }
   function recountLocal() {
@@ -1450,11 +1459,12 @@
     if (unsubBracket) { unsubBracket(); unsubBracket = null; }
     if (mode === 'sheets') { applySheetsSelection(); return; }
     if (!db) { loadLocalSport(); return; }
-    regs = []; bracket = null; dbReady = false;
+    regs = []; bracket = null; dbBracket = null; dbReady = false;
     const sp = sport;
     unsubRegs = db.collection(regsPath(sp)).orderBy('ts', 'asc').onSnapshot(snap => {
       if (!sport || sport.id !== sp.id) return;
       regs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      bracket = liveBracket(dbBracket, regs);
       if (dbReady) {
         const added = snap.docChanges().filter(c => c.type === 'added');
         if (added.length === 1) lastAddedId = added[0].doc.id;
@@ -1469,7 +1479,8 @@
     });
     unsubBracket = db.doc(bracketPath(sp)).onSnapshot(snap => {
       if (!sport || sport.id !== sp.id) return;
-      bracket = snap.exists ? snap.data() : null;
+      dbBracket = snap.exists ? snap.data() : null;
+      bracket = liveBracket(dbBracket, regs);
       renderBracket();
     }, () => {});
   }

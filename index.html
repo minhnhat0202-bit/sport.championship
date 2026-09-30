@@ -301,6 +301,8 @@
   }
   .g.m { background: var(--male-soft); color: var(--male); }
   .g.f { background: var(--female-soft); color: var(--female); }
+  .tteam { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; background: var(--gold-soft); color: var(--gold); white-space: nowrap; }
+  .pairs-table .fixed-tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: var(--gold-soft); color: var(--gold); vertical-align: 1px; }
   td.code { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
   td.ts { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 13px; }
   td.act { width: 40px; text-align: right; }
@@ -820,7 +822,7 @@
     <h3 id="pin-title">Xác nhận</h3>
     <p id="pin-desc"></p>
     <div class="pin-wrap" id="pin-wrap">
-      <label for="pin-input">Mã xác nhận của ban tổ chức</label>
+      <label for="pin-input" id="pin-label">Mã xác nhận của ban tổ chức</label>
       <input type="password" class="pin" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="••••••">
     </div>
     <div class="score-wrap" id="score-wrap" hidden>
@@ -854,8 +856,8 @@
   //   'single' = no pairing (slots = players)
   const DEFAULT_SPORTS = [
     { id: 'cau-long', name: 'Cầu lông', format: 'mixed', slots: 16, note: 'Đôi nam nữ · tối đa 16 đôi', waitlist: 99 },
-    { id: 'bida', name: 'Bida', format: 'pair', slots: 16, note: 'Đôi · tối đa 16 đôi' },
-    { id: 'bong-ban', name: 'Bóng bàn', format: 'pair', slots: 8, note: 'Đôi · tối đa 8 đôi' }
+    { id: 'bida', name: 'Bida', format: 'pair', slots: 12, note: 'Đôi · tối đa 12 đôi', draw: 'ko' },
+    { id: 'bong-ban', name: 'Bóng bàn', format: 'pair', slots: 9, note: 'Đôi · tối đa 9 đôi', draw: 'groups' }
   ];
   const DEFAULT_CFG = {
     eventTag: 'Giải thể thao mừng sinh nhật',
@@ -917,7 +919,7 @@
     bEmpty: $('bracket-empty'), bEmptyText: $('bracket-empty-text'), bWrap: $('bracket-wrap'), bSvg: $('bracket-svg'), bHint: $('bracket-hint'),
     pairsHead: $('pairs-thead'), pairsBody: $('pairs-tbody'),
     dlg: $('pin-dialog'), pinForm: $('pin-form'), pinInput: $('pin-input'), pinErr: $('pin-err'), pinCancel: $('pin-cancel'),
-    pinDesc: $('pin-desc'), pinTitle: $('pin-title'), pinWrap: $('pin-wrap'), pinOk: $('pin-ok'), toast: $('toast'),
+    pinDesc: $('pin-desc'), pinTitle: $('pin-title'), pinWrap: $('pin-wrap'), pinOk: $('pin-ok'), pinLabel: $('pin-label'), toast: $('toast'),
     scoreWrap: $('score-wrap'), scoreInput: $('score-input'),
     tabReg: $('tab-reg'), tabBracket: $('tab-bracket'), panelReg: $('panel-reg'), panelBracket: $('panel-bracket'),
     tabRegBadge: $('tab-reg-badge'), tabBracketBadge: $('tab-bracket-badge')
@@ -972,6 +974,22 @@
   const waitsOf = (g) => isMixed() ? waits.filter(r => r.gender === g) : waits;
   const waitPos = (r) => waitsOf(r.gender).findIndex(x => x.id === r.id) + 1;
   const waitLeftOf = (g) => Math.max(0, waitCapOf(sport) - waitsOf(g).length);
+  // ---- Pre-formed pairs: Registrations.team = the same label on two official players of the sport (pair or mixed format).
+  //      They stay together in the draw; everyone without a label is paired at random.
+  const teamTag = (r) => norm(r && r.team || '');
+  function fixedPairs() {
+    const out = { pairs: [], problems: [] };
+    if (fmtOf(sport) === 'single') return out;
+    const byTag = {};
+    regs.forEach(r => { const t = teamTag(r); if (t) (byTag[t] = byTag[t] || []).push(r); });
+    Object.keys(byTag).sort().forEach(t => {
+      const m = byTag[t];
+      if (m.length !== 2) out.problems.push(`Nhãn đội "${t}" có ${m.length} người (cần đúng 2)`);
+      else if (isMixed() && m[0].gender === m[1].gender) out.problems.push(`Đội "${t}" phải gồm một nam và một nữ`);
+      else out.pairs.push(m);
+    });
+    return out;
+  }
   // a saved bracket is only shown while every player in it is still registered; otherwise it is stale (list was cleared)
   const bracketMatches = (b, list) => {
     if (!b || !Array.isArray(b.teams) || !b.teams.length) return false;
@@ -1026,6 +1044,7 @@
       }
       el.pinTitle.textContent = title || 'Xác nhận';
       el.pinDesc.textContent = text || '';
+      el.pinLabel.textContent = sport ? `Mã xác nhận của ban tổ chức môn ${sport.name}` : 'Mã xác nhận của ban tổ chức';
       el.pinWrap.hidden = !needPin;
       el.scoreWrap.hidden = !withScore;
       el.scoreInput.value = withScore ? String(score || '') : '';
@@ -1265,7 +1284,7 @@
     el.tbody.innerHTML = rows.map((r, i) => `
       <tr data-id="${esc(r.id)}" class="${r.id === lastAddedId ? 'fresh' : ''}">
         <td class="idx">${i + 1}</td>
-        <td class="name"><span class="who"><span class="g ${r.gender === 'F' ? 'f' : 'm'}">${r.gender === 'F' ? 'Nữ' : 'Nam'}</span><span>${esc(r.name)}</span></span></td>
+        <td class="name"><span class="who"><span class="g ${r.gender === 'F' ? 'f' : 'm'}">${r.gender === 'F' ? 'Nữ' : 'Nam'}</span><span>${esc(r.name)}</span>${teamTag(r) && fmtOf(sport) !== 'single' ? `<span class="tteam" title="Đôi ghép sẵn">Đội ${esc(teamTag(r))}</span>` : ''}</span></td>
         <td class="code">${esc(r.code)}</td>
         <td class="dept">${esc(r.dept)}</td>
         <td class="ts">${fmtTs(r.ts)}</td>
@@ -1323,12 +1342,14 @@
   }
 
   // ---------- Bracket model ----------
-  // Single-elimination for N = 4, 8, 16 or 32 teams. Rounds 0..R-1 (R-1 = final); 'T' = third-place match.
+  // Single-elimination on a 4/8/16/32-slot bracket. Rounds 0..R-1 (R-1 = final); 'T' = third-place match.
+  // When some teams are exempt from round 1 (byes) that round is simply "Vòng 1".
   function roundNames(R) {
     const tail = ['Chung kết', 'Bán kết', 'Tứ kết'];
+    const byes = bracket && Array.isArray(bracket.koTeams) && bracket.koTeams.some(n => n === null || n === undefined);
     return Array.from({ length: R }, (_, r) => {
       const fromEnd = R - 1 - r;
-      return fromEnd < 3 ? tail[fromEnd] : `Vòng 1/${2 ** (fromEnd + 1)}`;
+      return fromEnd < 3 ? tail[fromEnd] : (r === 0 && byes ? 'Vòng 1' : `Vòng 1/${2 ** (fromEnd + 1)}`);
     });
   }
   const key = (r, i) => `${r}-${i}`;
@@ -1336,17 +1357,28 @@
   //      largest knockout that fits (6 -> 4, 9 -> 8, 12 -> 8, 18 -> 16). Qualifiers: group winners, then runners-up,
   //      then third-placed teams, each pot ranked by record, until the knockout is full.
   const isPow2 = (n) => n >= 4 && (n & (n - 1)) === 0;
+  const nextPow2 = (n) => 2 ** Math.ceil(Math.log2(Math.max(2, n)));
+  // Sports.draw: 'ko' = knockout (byes in round 1 when n is not a power of two) · 'groups' = groups of 3 · '' = auto
   function drawPlan(n) {
-    if (isPow2(n) && n <= 32) return { type: 'ko', ko: n };
-    if (n % 3 === 0 && n >= 6 && n <= 24) return { type: 'groups', groups: n / 3, size: 3, ko: 2 ** Math.floor(Math.log2(n)) };
-    return null;
+    const pref = sport && String(sport.draw || '').toLowerCase();
+    if (n < 3 || n > 32) return null;
+    const groups = { type: 'groups', groups: n / 3, size: 3, ko: 2 ** Math.floor(Math.log2(n)) };
+    const ko = { type: 'ko', ko: nextPow2(n), byes: nextPow2(n) - n };
+    if (pref === 'groups') return (n % 3 === 0 && n >= 6 && n <= 24) ? groups : null;
+    if (pref === 'ko') return ko;
+    if (isPow2(n)) return ko;
+    if (n % 3 === 0 && n >= 6 && n <= 24) return groups;
+    return ko;
   }
   const bracketSupported = (n) => !!drawPlan(n);
   const hasGroups = () => !!(bracket && Array.isArray(bracket.groups) && bracket.groups.length);
   const groupsLocked = () => hasGroups() && Array.isArray(bracket.koTeams);
   const teamByNo = (n) => (bracket && bracket.teams.find(t => t.n === n)) || null;
-  // teams in knockout round-0 order: the drawn list (knockout only) or the qualifiers once the group stage is locked
-  const koList = () => !bracket ? [] : (hasGroups() ? (groupsLocked() ? bracket.koTeams.map(teamByNo) : []) : bracket.teams);
+  // teams in knockout round-0 slot order. koTeams (team numbers, null = bye) is set by the group-stage lock or by a draw
+  // with byes; a plain power-of-two draw just uses the team list.
+  const koList = () => !bracket ? [] : (Array.isArray(bracket.koTeams) ? bracket.koTeams.map(n => n === null || n === undefined ? null : teamByNo(n)) : (hasGroups() ? [] : bracket.teams));
+  const koTeamCount = () => koList().filter(Boolean).length;
+  const koByes = () => koList().filter(t => !t).length;
   const koReady = () => !!bracket && (!hasGroups() || groupsLocked());
   const bracketSize = () => (bracket && bracket.size) || koList().length;
   const roundsCount = () => Math.round(Math.log2(bracketSize() || 2));
@@ -1359,10 +1391,14 @@
     if (r === 'T') return [loserOf(R - 2, 0), loserOf(R - 2, 1)];
     return [winnerOf(r - 1, 2 * i), winnerOf(r - 1, 2 * i + 1)];
   }
+  // round 0 slots are fixed, so a missing opponent there is a bye: the present team advances without a result
+  const isBye = (r, i) => { if (r !== 0) return false; const [a, b] = teamsOf(0, i); return (!!a) !== (!!b); };
+  // match number as people read it: byes in round 1 are not counted
+  const matchNo = (r, i) => { if (r !== 0) return i + 1; let n = 0; for (let k = 0; k <= i; k++) if (!isBye(0, k)) n++; return n; };
   function winnerOf(r, i) {
     const res = bracket.results && bracket.results[key(r, i)];
-    if (!res) return null;
     const [a, b] = teamsOf(r, i);
+    if (!res) return isBye(r, i) ? (a || b) : null;
     return res === 'A' ? a : b;
   }
   function loserOf(r, i) {
@@ -1496,24 +1532,31 @@
     const cap = playerCap();
     const grp = has && hasGroups(), locked = grp && groupsLocked(), gdone = grp && groupsDone();
     const champ = has && koReady() ? winnerOf(roundsCount() - 1, 0) : null;
-    el.tabBracketBadge.textContent = has ? (champ ? 'Đã có vô địch' : (grp && !locked ? 'Vòng bảng' : `${koList().length} ${unitWord()}`)) : (full && supported ? 'Sẵn sàng' : '');
-    el.btnPair.disabled = !full || has || !supported;
+    el.tabBracketBadge.textContent = has ? (champ ? 'Đã có vô địch' : (grp && !locked ? 'Vòng bảng' : `${koTeamCount()} ${unitWord()}`)) : (full && supported ? 'Sẵn sàng' : '');
+    const fp = fixedPairs();
+    const fpBad = fp.problems.length > 0;
+    el.btnPair.disabled = !full || has || !supported || fpBad;
     el.btnPair.hidden = has;
     el.btnRepair.hidden = !has;
-    el.btnRepair.disabled = !full || !supported;
+    el.btnRepair.disabled = !full || !supported || fpBad;
     el.btnLock.hidden = !(grp && gdone && !locked);
     el.btnLock.textContent = `Chốt vòng bảng, lập ${has ? koRoundName().toLowerCase() : 'tứ kết'}`;
     el.btnUnlock.hidden = !locked;
     if (has) {
       el.bStatus.textContent = champ ? `Vô địch: ${teamLabel(champ)}`
         : grp && !locked ? `Vòng bảng: ${groupResultCount()}/${groupMatchCount()} trận có kết quả${gdone ? ' · sẵn sàng chốt' : ''} · bốc thăm lúc ${fmtTs(bracket.createdAt)}`
-        : `${koList().length} ${unitWord()}${grp ? ` vào ${koRoundName().toLowerCase()}` : ''} · bốc thăm lúc ${fmtTs(bracket.createdAt)}`;
+        : `${koTeamCount()} ${unitWord()}${grp ? ` vào ${koRoundName().toLowerCase()}` : (koByes() ? ` · ${koByes()} ${unitWord()} miễn vòng 1` : '')} · bốc thăm lúc ${fmtTs(bracket.createdAt)}`;
       el.bStatus.className = 'status' + (champ || (grp && gdone && !locked) ? ' ready' : '');
     } else if (!supported) {
-      el.bStatus.textContent = `Sơ đồ tự động hỗ trợ 4, 8, 16, 32 ${unitWord()} (loại trực tiếp) hoặc 6, 9, 12, 15, 18, 21, 24 ${unitWord()} (vòng bảng 3 ${unitWord()} rồi loại trực tiếp). Môn này: ${n}.`;
+      el.bStatus.textContent = `Sơ đồ tự động hỗ trợ 3 đến 32 ${unitWord()}; vòng bảng cần số ${unitWord()} là bội của 3 (6 đến 24). Môn này: ${n}.`;
+      el.bStatus.className = 'status';
+    } else if (fpBad) {
+      el.bStatus.textContent = `Sửa cột team trong Sheet trước khi bốc thăm: ${fp.problems.join('; ')}.`;
       el.bStatus.className = 'status';
     } else if (full) {
-      el.bStatus.textContent = 'Đã đủ số lượng, sẵn sàng bốc thăm';
+      el.bStatus.textContent = fp.pairs.length
+        ? `Đã đủ số lượng, sẵn sàng bốc thăm · ${fp.pairs.length} đôi ghép sẵn, ${regs.length - fp.pairs.length * 2} người còn lại sẽ ghép ngẫu nhiên`
+        : 'Đã đủ số lượng, sẵn sàng bốc thăm';
       el.bStatus.className = 'status ready';
     } else {
       el.bStatus.textContent = isMixed()
@@ -1522,9 +1565,13 @@
       el.bStatus.className = 'status';
     }
     const plan = drawPlan(n);
-    const planText = plan && plan.type === 'groups'
+    const planText = (plan && plan.type === 'groups'
       ? ` Thể thức: chia ${plan.groups} bảng × ${plan.size} ${unitWord()} đánh vòng tròn, ${plan.ko} ${unitWord()} vào ${roundNames(Math.round(Math.log2(plan.ko)))[0].toLowerCase()} rồi loại trực tiếp.`
-      : '';
+      : plan && plan.byes
+        ? ` Thể thức: loại trực tiếp ${n} ${unitWord()}, ${n - plan.byes} ${unitWord()} đá vòng 1 (ưu tiên các đôi ghép sẵn), ${plan.byes} ${unitWord()} được miễn vòng 1 và vào thẳng ${roundNames(Math.round(Math.log2(plan.ko)))[1].toLowerCase()}.`
+        : '') + (fp.pairs.length
+      ? ` Hiện có ${fp.pairs.length} đôi ghép sẵn (cột team trong Sheet): ${fp.pairs.map(p => shortName(p[0].name) + ' + ' + shortName(p[1].name)).join(', ')}. Các đôi này giữ nguyên, ${Math.max(0, cap - fp.pairs.length * 2)} người còn lại được ghép ngẫu nhiên.`
+      : '');
     el.bEmptyText.textContent = (isMixed()
       ? `Khi đủ ${n} nam và ${n} nữ đăng ký môn ${name}, ban tổ chức bấm "Tự động xếp cặp" để bốc thăm ngẫu nhiên ${n} đội và lập sơ đồ.`
       : (isPair()
@@ -1548,13 +1595,19 @@
         ? `<tr><th scope="col">Đội</th><th scope="col">VĐV nam</th><th scope="col">VĐV nữ</th><th scope="col">${lastCol}</th></tr>`
         : `<tr><th scope="col">Đội</th><th scope="col">Thành viên 1</th><th scope="col">Thành viên 2</th><th scope="col">${lastCol}</th></tr>`)
       : `<tr><th scope="col">Số</th><th scope="col">Vận động viên</th><th scope="col">Phòng</th><th scope="col">${lastCol}</th></tr>`;
-    el.pairsBody.innerHTML = bracket.teams.map((t, idx) => {
-      const opp = bracket.teams[idx % 2 === 0 ? idx + 1 : idx - 1];
-      const first = grp ? `Bảng ${esc(groupOf(t.n))}` : `Trận ${Math.floor(idx / 2) + 1} · gặp ${opp ? (mixedTeams ? 'đội ' + opp.n : shortName(opp.members[0].name)) : '—'}`;
+    const slots = koList();
+    el.pairsBody.innerHTML = bracket.teams.map((t) => {
+      const slot = slots.findIndex(x => x && x.n === t.n);
+      const opp = slot >= 0 ? slots[slot ^ 1] : null;
+      const first = grp ? `Bảng ${esc(groupOf(t.n))}`
+        : slot < 0 ? ''
+        : !opp ? `Miễn vòng 1 · vào thẳng ${roundNames(roundsCount())[1] ? roundNames(roundsCount())[1].toLowerCase() : 'vòng sau'}`
+        : `Trận ${matchNo(0, Math.floor(slot / 2))} · gặp ${mixedTeams ? 'đội ' + opp.n : shortName(opp.members[0].name)}`;
       if (mixedTeams) {
         const m = genderCols ? (t.members.find(x => x.gender === 'M') || t.members[0]) : t.members[0];
         const f = genderCols ? (t.members.find(x => x.gender === 'F') || t.members[1]) : t.members[1];
-        return `<tr><td class="team-no">${t.n}</td><td>${esc(m.name)}<small>${esc(m.dept || '')}</small></td><td>${esc(f.name)}<small>${esc(f.dept || '')}</small></td><td>${first}</td></tr>`;
+        const fixedTag = t.fixed ? `<span class="fixed-tag" title="Đôi ghép sẵn (cột team)">Ghép sẵn${t.fixed !== true ? ' · ' + esc(String(t.fixed)) : ''}</span>` : '';
+        return `<tr><td class="team-no">${t.n}</td><td>${esc(m.name)}<small>${esc(m.dept || '')}</small></td><td>${esc(f.name)}<small>${esc(f.dept || '')}</small></td><td>${first}${fixedTag}</td></tr>`;
       }
       const p = t.members[0];
       return `<tr><td class="team-no">${t.n}</td><td>${esc(p.name)}<small>Mã NV ${esc(p.code || '')}</small></td><td>${esc(p.dept || '')}</td><td>${first}</td></tr>`;
@@ -1627,21 +1680,22 @@
       return score.replace(/(\d+)\s*[-–:]\s*(\d+)/g, '$2-$1');
     };
     const clickable = !!(a && b);
+    const bye = isBye(r, i);
     const row = (t, side, ry) => {
-      const cls = ['bk-team', !t ? 'tbd' : '', clickable ? 'clickable' : '', res ? (res === side ? 'win' : 'lose') : ''].join(' ');
+      const cls = ['bk-team', !t ? 'tbd' : '', clickable ? 'clickable' : '', res ? (res === side ? 'win' : 'lose') : (bye && t ? 'win' : '')].join(' ');
       const sc = scoreFor(side);
       const maxName = sc ? Math.max(12, 33 - Math.ceil(sc.length * 0.9) - 1) : 24;
-      const label = t ? esc(truncate(teamLabel(t), maxName)) : 'Chờ kết quả';
+      const label = t ? esc(truncate(teamLabel(t), maxName)) : (bye ? 'Miễn vòng 1' : 'Chờ kết quả');
       return `<g class="${cls}" data-r="${r}" data-i="${i}" data-side="${side}">
         <title>${t ? esc(teamFull(t)) : 'Chưa xác định'}</title>
         <rect class="bk-hit" x="${x + 1}" y="${ry}" width="${MW - 2}" height="${MH / 2 - 1}" rx="6"/>
         ${t ? `<text class="bk-seed" x="${x + 10}" y="${ry + 18}">${t.n}</text>` : ''}
         <text class="bk-name" x="${x + (t ? 34 : 12)}" y="${ry + 18}">${label}</text>
-        ${sc ? `<text class="bk-score" x="${x + MW - 10}" y="${ry + 18}" text-anchor="end">${esc(sc)}</text>` : (res === side ? `<circle class="bk-win-mark" cx="${x + MW - 12}" cy="${ry + MH / 4}" r="3.5"/>` : '')}
+        ${sc ? `<text class="bk-score" x="${x + MW - 10}" y="${ry + 18}" text-anchor="end">${esc(sc)}</text>` : ((res === side || (bye && t)) ? `<circle class="bk-win-mark" cx="${x + MW - 12}" cy="${ry + MH / 4}" r="3.5"/>` : '')}
       </g>`;
     };
     return `<g class="bk-match">
-      <rect class="bk-box ${res ? 'done' : ''}" x="${x}" y="${y}" width="${MW}" height="${MH}" rx="8"/>
+      <rect class="bk-box ${res || bye ? 'done' : ''}" x="${x}" y="${y}" width="${MW}" height="${MH}" rx="8"/>
       ${row(a, 'A', y + 1)}
       <line class="bk-sep" x1="${x + 6}" x2="${x + MW - 6}" y1="${y + MH / 2}" y2="${y + MH / 2}"/>
       ${row(b, 'B', y + MH / 2 + 1)}
@@ -1844,7 +1898,7 @@
     unavailable: 'Không kết nối được máy chủ. Kiểm tra mạng và thử lại.',
     invalid: 'Dữ liệu gửi lên không hợp lệ. Kiểm tra lại các trường và thử lại.',
     error: 'Máy chủ dữ liệu báo lỗi. Thử lại sau ít phút hoặc báo ban tổ chức.',
-    pin: 'Mã xác nhận không đúng.',
+    pin: 'Mã xác nhận không đúng. Mỗi bộ môn có mã riêng, kiểm tra bạn đang dùng đúng mã của môn này.',
     'pin-unset': 'Ban tổ chức chưa đặt mã xác nhận trong Google Sheet (tab Config, dòng pin).'
   };
 
@@ -1956,7 +2010,8 @@
     if (!isFull() || !bracketSupported(S())) return;
     const n = S();
     const plan = drawPlan(n);
-    const planText = plan.type === 'groups' ? ` Chia ${plan.groups} bảng × ${plan.size} ${unitWord()} đánh vòng tròn, ${plan.ko} ${unitWord()} vào ${roundNames(Math.round(Math.log2(plan.ko)))[0].toLowerCase()}.` : '';
+    const planText = plan.type === 'groups' ? ` Chia ${plan.groups} bảng × ${plan.size} ${unitWord()} đánh vòng tròn, ${plan.ko} ${unitWord()} vào ${roundNames(Math.round(Math.log2(plan.ko)))[0].toLowerCase()}.`
+      : plan.byes ? ` ${n - plan.byes} ${unitWord()} đá vòng 1 (ưu tiên đôi ghép sẵn), ${plan.byes} ${unitWord()} được miễn vòng 1.` : '';
     const ok = await confirmAction({
       title: isRedo ? 'Bốc thăm lại' : (fmtOf(sport) === 'single' ? 'Bốc thăm sơ đồ' : 'Tự động xếp cặp'),
       text: isRedo
@@ -1971,17 +2026,45 @@
     if (!ok) return;
     const pick = (r) => ({ id: r.id, name: r.name, dept: r.dept || '', code: r.code || '', gender: r.gender });
     let teams;
+    const fp = fixedPairs();
+    if (fp.problems.length) { toast('Sửa cột team trong Sheet trước: ' + fp.problems.join('; '), 'bad'); return; }
+    // pre-formed pairs stay together; everyone else is paired at random; then the team order (seeding) is shuffled
+    const fixedIds = new Set(fp.pairs.flat().map(r => r.id));
+    const fixedTeams = fp.pairs.map(p => ({ members: [pick(p[0]), pick(p[1])], fixed: teamTag(p[0]) || true }));
+    const free = regs.filter(r => !fixedIds.has(r.id));
     if (isPair()) {
-      const players = shuffle(regs).slice(0, n * 2);
-      teams = Array.from({ length: n }, (_, i) => ({ n: i + 1, members: [pick(players[2 * i]), pick(players[2 * i + 1])] }));
+      const players = shuffle(free).slice(0, (n - fixedTeams.length) * 2);
+      const randomTeams = Array.from({ length: Math.floor(players.length / 2) }, (_, i) => ({ members: [pick(players[2 * i]), pick(players[2 * i + 1])] }));
+      teams = shuffle(fixedTeams.concat(randomTeams)).slice(0, n).map((t, i) => ({ n: i + 1, ...t }));
     } else if (isMixed()) {
-      const men = shuffle(regs.filter(r => r.gender === 'M')).slice(0, n);
-      const women = shuffle(regs.filter(r => r.gender === 'F')).slice(0, n);
-      teams = men.map((m, i) => ({ n: i + 1, members: [pick(m), pick(women[i])] }));
+      const men = shuffle(free.filter(r => r.gender === 'M')).slice(0, n - fixedTeams.length);
+      const women = shuffle(free.filter(r => r.gender === 'F')).slice(0, n - fixedTeams.length);
+      const randomTeams = men.map((m, i) => ({ members: [pick(m), pick(women[i])] })).filter(t => t.members[1]);
+      teams = shuffle(fixedTeams.concat(randomTeams)).slice(0, n).map((t, i) => ({ n: i + 1, ...t }));
     } else {
       teams = shuffle(regs).slice(0, n).map((r, i) => ({ n: i + 1, members: [pick(r)] }));
     }
     const next = { createdAt: new Date().toISOString(), size: plan.ko, format: sport.format, teams, results: {}, scores: {} };
+    if (plan.type === 'ko' && plan.byes > 0) {
+      // Round 1 is played by pre-formed pairs first, then randomly chosen others; the remaining teams get a bye.
+      // Byes are spread over the bracket so each second-round match is "round-1 winner vs bye team" where possible.
+      const P = plan.ko, playing = teams.length - plan.byes;
+      const fixedT = shuffle(teams.filter(t => t.fixed)), randomT = shuffle(teams.filter(t => !t.fixed));
+      const play = fixedT.slice(0, playing).concat(randomT.slice(0, Math.max(0, playing - fixedT.length)));
+      const playIds = new Set(play.map(t => t.n));
+      const byeT = shuffle(teams.filter(t => !playIds.has(t.n)));
+      const playT = shuffle(play);
+      const units = [];   // round-1 match units: [a, b] or [bye, null]
+      const R = playT.length / 2, B = byeT.length;
+      let ri = 0, bi = 0, acc = 0;
+      for (let u = 0; u < R + B; u++) {
+        acc += R;
+        if (ri < R && (acc >= R + B || bi >= B)) { acc -= R + B; units.push([playT[2 * ri], playT[2 * ri + 1]]); ri++; }
+        else { units.push([byeT[bi], null]); bi++; }
+      }
+      next.koTeams = units.flat().map(t => t ? t.n : null);
+      while (next.koTeams.length < P) next.koTeams.push(null);
+    }
     if (plan.type === 'groups') {
       const names = 'ABCDEFGH';
       next.groups = Array.from({ length: plan.groups }, (_, gi) => ({ name: names[gi], teams: teams.slice(gi * plan.size, (gi + 1) * plan.size).map(t => t.n) }));
@@ -2061,13 +2144,13 @@
     let title, text, okLabel, danger = false, score;
     if (current === side) {
       title = 'Bỏ kết quả'; okLabel = 'Bỏ kết quả'; danger = true;
-      text = `${roundName}, trận ${i + 1}: bỏ kết quả ${teamLabel(chosen)} thắng. Kết quả các vòng sau phụ thuộc trận này cũng bị xoá.`;
+      text = `${roundName}, trận ${matchNo(r, i)}: bỏ kết quả ${teamLabel(chosen)} thắng. Kết quả các vòng sau phụ thuộc trận này cũng bị xoá.`;
     } else if (current) {
       title = 'Đổi đội thắng'; okLabel = 'Đổi'; danger = true; score = '';
-      text = `${roundName}, trận ${i + 1}: đổi đội thắng thành ${teamLabel(chosen)}. Kết quả các vòng sau phụ thuộc trận này sẽ bị xoá.`;
+      text = `${roundName}, trận ${matchNo(r, i)}: đổi đội thắng thành ${teamLabel(chosen)}. Kết quả các vòng sau phụ thuộc trận này sẽ bị xoá.`;
     } else {
       title = 'Ghi kết quả'; okLabel = 'Ghi đội thắng'; score = '';
-      text = `${roundName}, trận ${i + 1}: ${teamLabel(chosen)} thắng ${teamLabel(side === 'A' ? b : a)}.`;
+      text = `${roundName}, trận ${matchNo(r, i)}: ${teamLabel(chosen)} thắng ${teamLabel(side === 'A' ? b : a)}.`;
     }
     const ok = await confirmAction({ title, text, okLabel, danger, score });
     if (!ok) return;

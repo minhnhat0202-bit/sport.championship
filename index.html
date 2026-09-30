@@ -322,6 +322,7 @@
   .wait-block td.name { font-weight: 500; }
   .wait-block thead th { font-size: 11.5px; }
   .btn-wait, .btn-wait:hover { background: var(--ink); color: #fff; }
+  tr.subs-row td { font-size: 12.5px; color: var(--muted); background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
   .table-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
 
   /* Bracket section */
@@ -1383,6 +1384,11 @@
       const p = t.members[0];
       return `<tr><td class="team-no">${t.n}</td><td>${esc(p.name)}<small>Mã NV ${esc(p.code || '')}</small></td><td>${esc(p.dept || '')}</td><td>${first}</td></tr>`;
     }).join('');
+    const subs = Array.isArray(bracket.substitutions) ? bracket.substitutions : [];
+    if (subs.length) {
+      const cols = el.pairsHead.querySelectorAll('th').length || 4;
+      el.pairsBody.insertAdjacentHTML('beforeend', `<tr class="subs-row"><td colspan="${cols}"><b>Thay người:</b> ${subs.map(x => `${esc(x.in.name)} thay ${esc(x.out.name)}${x.team ? ` (đội ${x.team})` : ''} lúc ${fmtTs(x.at)}`).join(' · ')}</td></tr>`);
+    }
   }
 
   function updateBracketHint() {
@@ -1524,6 +1530,14 @@
   function nextWaiter(gender) {
     const list = isMixed() ? waits.filter(r => r.gender === gender) : waits;
     return list[0] || null;
+  }
+  const inBracket = (b, id) => !!(b && Array.isArray(b.teams) && b.teams.some(t => t.members.some(m => m && m.id === id)));
+  // a new player takes the exact place of `oldId` in the drawn bracket; results and scores are kept
+  function substituteMember(b, oldId, oldName, p) {
+    let teamNo = null;
+    const teams = b.teams.map(t => ({ ...t, members: t.members.map(m => { if (m.id !== oldId) return m; teamNo = t.n; return { id: p.id, name: p.name, dept: p.dept || '', code: p.code || '', gender: p.gender }; }) }));
+    const subs = (b.substitutions || []).concat([{ at: new Date().toISOString(), team: teamNo, out: { id: oldId, name: oldName }, in: { id: p.id, name: p.name } }]);
+    return { ...b, teams, substitutions: subs };
   }
   async function saveBracket(next) {
     if (mode === 'sheets') {
@@ -1712,12 +1726,18 @@
     if (!r) return;
     const waiting = isWaitRow(r);
     const up = !waiting ? nextWaiter(r.gender) : null;
+    const drawn = !waiting && inBracket(bracket, id);
+    const after = waiting ? ''
+      : (up && drawn) ? `${up.name} ở đầu hàng chờ sẽ được đôn lên và thay đúng vào vị trí của ${shortName(r.name)} trong sơ đồ thi đấu, kết quả các trận giữ nguyên.`
+      : up ? `${up.name} ở đầu hàng chờ sẽ được đôn lên thay.`
+      : drawn ? 'Không có ai trong hàng chờ để thay, nên sơ đồ thi đấu hiện tại sẽ bị xoá và cần bốc thăm lại.'
+      : 'Slot sẽ được trả lại.';
     const ok = await confirmAction({
-      title: waiting ? 'Xoá khỏi hàng chờ' : 'Xoá đăng ký',
+      title: waiting ? 'Xoá khỏi hàng chờ' : (drawn ? 'Loại VĐV khỏi giải' : 'Xoá đăng ký'),
       text: waiting
         ? `Xoá ${r.name} (mã ${r.code}) khỏi hàng chờ môn ${sport.name}.`
-        : `Xoá đăng ký môn ${sport.name} của ${r.name} (mã ${r.code}). ${up ? `${up.name} ở đầu hàng chờ sẽ được đôn lên thay.` : 'Slot sẽ được trả lại.'}`,
-      okLabel: waiting ? 'Xoá khỏi hàng chờ' : 'Xoá đăng ký', danger: true
+        : `Xoá đăng ký môn ${sport.name} của ${r.name} (mã ${r.code}). ${after}`,
+      okLabel: waiting ? 'Xoá khỏi hàng chờ' : (drawn ? 'Loại và thay người' : 'Xoá đăng ký'), danger: true
     });
     if (!ok) return;
     btn.disabled = true;
@@ -1729,18 +1749,28 @@
         if (err) throw err;
         promoted = res.promoted || null;
         allRegs = allRegs.filter(x => !(x.sport === sport.id && x.id === id)).map(x => (promoted && x.sport === sport.id && x.id === promoted.id) ? { ...x, status: '' } : x);
+        if (res.bracketUpdated && promoted && brackets[sport.id]) brackets[sport.id] = substituteMember(brackets[sport.id], id, r.name, promoted);
+        else if (res.bracketRemoved) delete brackets[sport.id];
         applySheetsSelection();
         refreshSheets(true);
       } else if (db) {
         await db.collection(regsPath(sport)).doc(id).delete();
-        if (up) { await db.collection(regsPath(sport)).doc(up.id).set({ ...up, status: '' }); promoted = up; }
+        if (up) {
+          await db.collection(regsPath(sport)).doc(up.id).set({ ...up, status: '' });
+          promoted = up;
+          if (drawn) await db.doc(bracketPath(sport)).set(substituteMember(bracket, id, r.name, up));
+        }
       } else {
         const rest = [...regs, ...waits].filter(x => x.id !== id).map(x => (up && x.id === up.id) ? { ...x, status: '' } : x);
         if (up) promoted = up;
+        if (up && drawn) local.bracket[sport.id] = substituteMember(bracket, id, r.name, up);
         local.regs[sport.id] = rest;
         saveLocal(); loadLocalSport(); renderAll();
       }
-      toast(waiting ? `Đã xoá ${r.name} khỏi hàng chờ.` : `Đã xoá đăng ký của ${r.name}.${promoted ? ` ${promoted.name} được đôn lên từ hàng chờ.` : ''}`, 'ok');
+      const swapped = promoted && drawn;
+      toast(waiting ? `Đã xoá ${r.name} khỏi hàng chờ.`
+        : swapped ? `Đã loại ${r.name}. ${promoted.name} được đôn lên và thay vào vị trí trong sơ đồ.`
+        : `Đã xoá đăng ký của ${r.name}.${promoted ? ` ${promoted.name} được đôn lên từ hàng chờ.` : ''}${drawn ? ' Sơ đồ đã bị xoá, cần bốc thăm lại.' : ''}`, 'ok');
     } catch (e) { toast('Không xoá được: ' + (ERR_TEXT[e && e.code] || ERR_TEXT[mapDbErr(e).code] || ERR_TEXT.unavailable), 'bad'); btn.disabled = false; }
   }
   el.tbody.addEventListener('click', onDeleteClick);

@@ -1041,7 +1041,8 @@
     allRegs = Array.isArray(st.regs) ? st.regs : [];
     brackets = st.brackets || {};
     const list = sports();
-    if (!sport || !list.some(sp => sp.id === sport.id)) sport = list.find(sp => sp.id === initialSportId()) || list[0];
+    // always re-point to the fresh entry: slots, note, deadline or waitlist may have been edited in the Sheet
+    sport = (sport && list.find(sp => sp.id === sport.id)) || list.find(sp => sp.id === initialSportId()) || list[0];
     applySheetsSelection();
   }
   function applySheetsSelection() {
